@@ -1,0 +1,59 @@
+/*
+ * Paleta y escalas del portal. Es la unica fuente de color: ningun componente
+ * escribe un hex que no salga de aqui (salvo el color de area, que viene de
+ * departamentos.config.ts y tambien es de esta paleta).
+ */
+:root {
+  /* Superficies */
+  --lienzo: #fff6ed;
+  --pagina-doc: #f3ece4;
+  --tarjeta: #ffffff;
+  --borde-tarjeta: #e7dace;
+
+  /* Marca */
+  --burdeos: #6f263d;
+  --rosa: #dfa0c9;
+  --rojo: #ba1c43;
+  --coral: #ff5948;
+  --lila: #b4b5df;
+  --azul: #10069f;
+
+  /* Texto */
+  --texto: #1a1416;
+  --texto-secundario: #6b5c60;
+  --texto-terciario: #8c7e82;
+  --texto-sobre-burdeos: #fff6ed;
+
+  /* Estado */
+  --positivo: #0f7a63;
+  --negativo: #ba1c43;
+  --alerta: #ff5948;
+
+  /* Tablas */
+  --fila-alterna: #fcf8f3;
+  --fila-total: #f6ebf1;
+  --borde-total: #e8d3de;
+
+  /* Divisores */
+  --divisor: #f2e9de;
+  --divisor-fuerte: #efe3d6;
+  --divisor-fuerte-2: #e0d3c6;
+
+  /* Forma */
+  --radio-tarjeta: 8px;
+  --radio-boton: 6px;
+  --radio-chip: 4px;
+
+  /* Ritmo */
+  --espacio-1: 4px;
+  --espacio-2: 8px;
+  --espacio-3: 12px;
+  --espacio-4: 16px;
+  --espacio-5: 24px;
+  --espacio-6: 32px;
+  --espacio-7: 48px;
+
+  /* Tipografia */
+  --fuente: 'Montserrat Variable', 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+  --ancho-maximo: 1280px;
+}

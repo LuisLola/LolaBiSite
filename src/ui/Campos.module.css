@@ -1,0 +1,122 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.etiqueta {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--texto-terciario);
+}
+
+.control {
+  width: 100%;
+  font-family: var(--fuente);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--texto);
+  background: var(--tarjeta);
+  border: 1px solid var(--divisor-fuerte-2);
+  border-radius: var(--radio-boton);
+  padding: 7px 10px;
+}
+
+.control:hover {
+  border-color: var(--borde-total);
+}
+
+.control:focus {
+  outline: none;
+  border-color: var(--burdeos);
+}
+
+.control::placeholder {
+  color: var(--texto-terciario);
+}
+
+.control:disabled {
+  background: var(--pagina-doc);
+  color: var(--texto-secundario);
+}
+
+.textarea {
+  min-height: 68px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.monoUrl {
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+.error {
+  border-color: var(--negativo);
+}
+
+.mensajeError {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--negativo);
+}
+
+.ayuda {
+  font-size: 11px;
+  color: var(--texto-terciario);
+}
+
+.buscador {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.buscadorIcono {
+  position: absolute;
+  left: 10px;
+  display: flex;
+  color: var(--texto-terciario);
+  pointer-events: none;
+}
+
+.buscadorControl {
+  padding-left: 32px;
+}
+
+.casilla {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--texto-secundario);
+  cursor: pointer;
+}
+
+.casilla input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--burdeos);
+}
+
+.enLinea {
+  display: flex;
+  gap: var(--espacio-3);
+  flex-wrap: wrap;
+}
+
+.controlEnLinea {
+  padding: 4px 7px;
+  font-size: 12px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.controlEnLinea:hover,
+.controlEnLinea:focus {
+  border-color: var(--burdeos);
+  background: var(--tarjeta);
+}

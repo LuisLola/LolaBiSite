@@ -1,0 +1,75 @@
+.envoltorio {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+/* Cabeceras: 9px/800 mayusculas burdeos, borde inferior 2px, sin verticales. */
+.tabla thead th {
+  padding: 0 var(--espacio-3) 7px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--burdeos);
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--burdeos);
+  background: transparent;
+}
+
+.tabla tbody td {
+  padding: 10px var(--espacio-3);
+  border-bottom: 1px solid var(--divisor);
+  vertical-align: middle;
+}
+
+.tabla:not(.cebraManual) tbody tr:nth-child(even) {
+  background: var(--fila-alterna);
+}
+
+/* Con filas de grupo intercaladas la paridad la marca quien pinta la tabla. */
+.tabla.cebraManual tbody tr.filaAlterna {
+  background: var(--fila-alterna);
+}
+
+.tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.numerico {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.estrecha {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.filaAtenuada td {
+  color: var(--texto-terciario);
+}
+
+.filaTotal {
+  background: var(--fila-total) !important;
+  border-top: 1px solid var(--borde-total);
+}
+
+.filaGrupo td {
+  background: var(--fila-total);
+  border-bottom: 1px solid var(--borde-total);
+  padding: 7px var(--espacio-3);
+}
+
+.vacia {
+  padding: var(--espacio-6) var(--espacio-3);
+  text-align: center;
+  color: var(--texto-terciario);
+  font-size: 13px;
+}

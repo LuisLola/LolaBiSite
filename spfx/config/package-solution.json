@@ -1,0 +1,44 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "Portal BI · Lola Casademunt",
+    "id": "06fba074-d2b5-4340-b2ad-f7d51b577c8d",
+    "version": "0.1.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "webApiPermissionRequests": [
+      { "resource": "Microsoft Graph", "scope": "GroupMember.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "User.Read.All" }
+    ],
+    "developer": {
+      "name": "Lola Casademunt",
+      "websiteUrl": "https://lolacasademunt.sharepoint.com",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": ""
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "Portal de consulta y administración de los paneles de Power BI, por departamento."
+      },
+      "longDescription": {
+        "default": "Muestra los paneles de Power BI de la lista 'Paneles PowerBi LolaCasademunt' agrupados por departamento e informe, con buscador, ficha de área y pantalla de administración."
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "Portal BI · Lola Casademunt",
+        "description": "Despliega el web part Portal BI.",
+        "id": "b5c01a4e-27f2-405d-9e2a-b064865c47a4",
+        "version": "0.1.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/portal-bi.sppkg"
+  }
+}

@@ -1,0 +1,16 @@
+.etiqueta {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--texto-terciario);
+}
+
+.sobreBurdeos {
+  color: rgba(255, 246, 237, 0.72);
+}
+
+.conMargen {
+  margin-bottom: var(--espacio-3);
+}

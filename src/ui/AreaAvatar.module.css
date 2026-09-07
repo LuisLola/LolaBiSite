@@ -1,0 +1,35 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: 6px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.mediano {
+  width: 44px;
+  height: 44px;
+  font-size: 15px;
+}
+
+.grande {
+  width: 56px;
+  height: 56px;
+  font-size: 19px;
+  border-radius: 8px;
+}
+
+.pequeno {
+  width: 26px;
+  height: 26px;
+  font-size: 10px;
+  border-radius: 4px;
+}
+
+.huerfano {
+  border: 1px dashed var(--divisor-fuerte-2);
+}

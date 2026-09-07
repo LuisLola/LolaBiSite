@@ -1,0 +1,156 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+}
+
+.migas {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--texto-terciario);
+}
+
+.migas a {
+  color: var(--texto-secundario);
+  text-decoration: none;
+}
+
+.migas a:hover {
+  color: var(--burdeos);
+}
+
+.cabecera {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+}
+
+.cabeceraTextos {
+  min-width: 0;
+  flex: 1;
+}
+
+.titulo {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.descripcion {
+  margin-top: var(--espacio-2);
+  max-width: 74ch;
+  font-size: 13px;
+  color: var(--texto-secundario);
+}
+
+.metaCabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  margin-top: var(--espacio-3);
+  font-size: 11px;
+  color: var(--texto-terciario);
+  flex-wrap: wrap;
+}
+
+.metaValor {
+  font-variant-numeric: tabular-nums;
+}
+
+.avisoAcceso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
+  background: var(--fila-total);
+  border: 1px solid var(--borde-total);
+  border-radius: var(--radio-tarjeta);
+  font-size: 12px;
+  color: var(--texto-secundario);
+}
+
+.avisoAccion {
+  margin-left: auto;
+  flex: none;
+}
+
+.nombrePanel {
+  font-weight: 600;
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.nombrePanel:hover {
+  color: var(--burdeos);
+  text-decoration: underline;
+}
+
+.nombrePanelSinAcceso {
+  font-weight: 500;
+  color: var(--texto-terciario);
+}
+
+.paraQue {
+  color: var(--texto-secundario);
+  max-width: 46ch;
+}
+
+.sinDato {
+  color: var(--texto-terciario);
+}
+
+.grupoInforme {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espacio-2);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--burdeos);
+}
+
+.grupoInformeConteo {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--texto-terciario);
+}
+
+.pieTarjetas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-4);
+}
+
+@media (max-width: 860px) {
+  .pieTarjetas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.listaAyuda {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  font-size: 12px;
+  color: var(--texto-secundario);
+}
+
+.listaAyuda li {
+  display: flex;
+  gap: var(--espacio-2);
+}
+
+.accionDocumentos {
+  align-self: flex-start;
+  margin-top: var(--espacio-4);
+}
+
+.vinieta {
+  color: var(--burdeos);
+  font-weight: 800;
+  flex: none;
+}

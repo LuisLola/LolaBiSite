@@ -1,0 +1,81 @@
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  border-radius: var(--radio-boton);
+  border: 1px solid transparent;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.boton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.boton:hover {
+  text-decoration: none;
+}
+
+.primario {
+  background: var(--burdeos);
+  color: var(--texto-sobre-burdeos);
+  border-color: var(--burdeos);
+}
+
+.primario:hover:not(:disabled) {
+  background: #5c1f33;
+  border-color: #5c1f33;
+}
+
+.secundario {
+  background: var(--tarjeta);
+  color: var(--burdeos);
+  border-color: var(--borde-total);
+}
+
+.secundario:hover:not(:disabled) {
+  border-color: var(--burdeos);
+}
+
+.fantasma {
+  background: transparent;
+  color: var(--texto-secundario);
+  border-color: transparent;
+}
+
+.fantasma:hover:not(:disabled) {
+  color: var(--burdeos);
+  background: var(--fila-total);
+}
+
+.peligro {
+  background: var(--tarjeta);
+  color: var(--negativo);
+  border-color: var(--borde-total);
+}
+
+.peligro:hover:not(:disabled) {
+  border-color: var(--negativo);
+}
+
+.pequeno {
+  padding: 5px 9px;
+  font-size: 11px;
+}
+
+.icono {
+  padding: 6px;
+  border-radius: var(--radio-boton);
+}
+
+.anchoCompleto {
+  width: 100%;
+}

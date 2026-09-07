@@ -1,0 +1,156 @@
+.raiz {
+  min-height: 100vh;
+  background: var(--lienzo);
+}
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--lienzo);
+  border-bottom: 1px solid var(--divisor-fuerte);
+}
+
+.barraInterior {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-5);
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: var(--espacio-3) var(--espacio-5);
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  color: var(--texto);
+  text-decoration: none;
+  flex: none;
+}
+
+.marca:hover {
+  text-decoration: none;
+}
+
+.marcaNombre {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.marcaSub {
+  display: block;
+  margin-top: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--texto-terciario);
+  line-height: 1;
+}
+
+.sello {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--burdeos);
+  color: var(--texto-sobre-burdeos);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  flex: none;
+}
+
+.navegacion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+}
+
+.enlaceNav {
+  padding: 5px 10px;
+  border-radius: var(--radio-boton);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  text-decoration: none;
+}
+
+.enlaceNav:hover {
+  color: var(--burdeos);
+  background: var(--fila-total);
+  text-decoration: none;
+}
+
+.enlaceNavActivo {
+  color: var(--burdeos);
+  background: var(--fila-total);
+}
+
+.derecha {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  margin-left: auto;
+}
+
+.atajo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: 6px 10px 6px 9px;
+  min-width: 200px;
+  border: 1px solid var(--divisor-fuerte-2);
+  border-radius: var(--radio-boton);
+  background: var(--tarjeta);
+  color: var(--texto-terciario);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+
+.atajo:hover {
+  border-color: var(--burdeos);
+  color: var(--burdeos);
+}
+
+.atajoTecla {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--texto-terciario);
+}
+
+.selectorUsuario {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.contenido {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: var(--espacio-6) var(--espacio-5) var(--espacio-7);
+}
+
+.pieSitio {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: var(--espacio-4) var(--espacio-5) var(--espacio-6);
+  border-top: 1px solid var(--divisor-fuerte);
+  display: flex;
+  gap: var(--espacio-4);
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--texto-terciario);
+}

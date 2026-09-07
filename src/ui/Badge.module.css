@@ -1,0 +1,77 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--divisor-fuerte-2);
+  border-radius: var(--radio-chip);
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--texto-secundario);
+  background: var(--tarjeta);
+}
+
+.tienes {
+  color: var(--positivo);
+  border-color: #cfe4dd;
+  background: #f2f9f6;
+}
+
+.solicitar {
+  color: var(--burdeos);
+  border-color: var(--borde-total);
+  background: var(--fila-total);
+}
+
+.activo {
+  color: var(--positivo);
+  border-color: #cfe4dd;
+  background: #f2f9f6;
+}
+
+.pruebas {
+  color: #8a4b00;
+  border-color: #f0d9c4;
+  background: #fdf2e7;
+}
+
+.retirado {
+  color: var(--texto-terciario);
+  border-color: var(--divisor-fuerte-2);
+  background: var(--pagina-doc);
+}
+
+.destacado {
+  color: var(--burdeos);
+  border-color: var(--borde-total);
+  background: var(--fila-total);
+}
+
+.aviso {
+  color: var(--negativo);
+  border-color: var(--borde-total);
+  background: var(--fila-total);
+}
+
+.neutro {
+  color: var(--texto-secundario);
+  background: var(--pagina-doc);
+  border-color: var(--divisor-fuerte-2);
+}
+
+.sobreBurdeos {
+  color: var(--texto-sobre-burdeos);
+  border-color: rgba(255, 246, 237, 0.45);
+  background: transparent;
+}
+
+.punto {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
