@@ -6,6 +6,7 @@ import { CommandPalette } from '../pages/Buscador/CommandPalette';
 import { Select } from '../ui/Campos';
 import { cx } from '../ui/cx';
 import estilos from './Layout.module.css';
+import { MenuSitio } from './MenuSitio';
 
 function claseNav({ isActive }: { isActive: boolean }) {
   return cx(estilos.enlaceNav, isActive && estilos.enlaceNavActivo);
@@ -74,6 +75,8 @@ export function Layout() {
                 </Select>
               </div>
             ) : null}
+
+            {esAdministrador ? <MenuSitio /> : null}
           </div>
         </div>
       </header>
