@@ -97,7 +97,7 @@ export const TEMA_DEFECTO: Tema = {
   'espacio-7': '48px',
 
   fuente: "'Montserrat Variable', 'Montserrat', 'Segoe UI', system-ui, sans-serif",
-  'ancho-maximo': '1280px',
+  'ancho-maximo': '1680px',
 };
 
 const ES_TOKEN = new Set<string>(TOKENS as readonly string[]);

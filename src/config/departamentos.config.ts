@@ -22,6 +22,13 @@ export interface DepartamentoConfig {
   /**
    * Equipo de Teams (grupo de M365) que da acceso al área. La pertenencia a
    * este grupo es lo único que decide qué ve cada persona.
+   *
+   * NO poner equipos aqui de relleno. Un area con equipo solo la ven sus
+   * miembros (useAcceso.puedeVerDepartamento), asi que un nombre de grupo que
+   * no exista en el tenant esconde el area a TODO el mundo: el portal sale con
+   * 0 paneles y 0 departamentos, sin ningun error. Los equipos reales se
+   * enlazan desde Administracion -> Accesos, que escribe en la lista
+   * "Departamentos BI" y manda sobre esto.
    */
   grupo?: GrupoM365;
 }
@@ -45,8 +52,6 @@ export const DEPARTAMENTOS_CONFIG: Record<string, DepartamentoConfig> = {
       'Venta en tienda propia y canal online: desempeño diario, ranking por temporada y comparativa entre temporadas.',
     responsable: 'Dirección de Operaciones',
     horaActualizacion: '08:15',
-    // id vacío: pendiente de enlazar con el equipo real desde Administración.
-    grupo: { id: '', nombre: 'BI-RetailOnline', esEquipoTeams: true },
   },
   Multimarca: {
     iniciales: 'MM',
@@ -56,7 +61,6 @@ export const DEPARTAMENTOS_CONFIG: Record<string, DepartamentoConfig> = {
       'Canal mayorista y multimarca: servicio de temporada, ranking de producto y plan de servicio B2B.',
     responsable: 'Dirección Comercial',
     horaActualizacion: '08:30',
-    grupo: { id: '', nombre: 'BI-Multimarca', esEquipoTeams: true },
   },
   Logistica: {
     iniciales: 'LG',
@@ -66,7 +70,6 @@ export const DEPARTAMENTOS_CONFIG: Record<string, DepartamentoConfig> = {
       'Almacén y transporte: análisis de transportes y previsión de entradas y salidas de almacén.',
     responsable: 'Dirección de Logística',
     horaActualizacion: '07:45',
-    grupo: { id: '', nombre: 'BI-Logistica', esEquipoTeams: true },
   },
 };
 

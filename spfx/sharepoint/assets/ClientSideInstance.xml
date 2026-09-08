@@ -11,5 +11,5 @@
     Title="Boton Portal BI"
     Location="ClientSideExtension.ApplicationCustomizer"
     ComponentId="65d56318-40c5-429b-a467-78d63e071bb6"
-    Properties="{&quot;urlPortal&quot;:&quot;https://lolacasademunt.sharepoint.com/sites/PortalBI/SitePages/Home.aspx&quot;,&quot;etiqueta&quot;:&quot;Paneles BI&quot;}" />
+    Properties="{&quot;urlPortal&quot;:&quot;https://lolacasademunt.sharepoint.com/sites/PortalBI/SitePages/Home.aspx?env=WebView&quot;,&quot;etiqueta&quot;:&quot;Paneles BI&quot;}" />
 </Elements>

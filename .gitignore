@@ -15,3 +15,4 @@ spfx/sharepoint/solution/
 spfx/src/compartido
 # Grafo de conocimiento generado (graphify)
 graphify-out/
+spfx/jest-output/

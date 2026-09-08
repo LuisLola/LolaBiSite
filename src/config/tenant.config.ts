@@ -11,8 +11,16 @@ export const TENANT_ID = '52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70';
  */
 export const URL_SITIO_PORTAL = 'https://lolacasademunt.sharepoint.com/sites/PortalBI';
 
-/** Pagina del portal. La abre el boton que lo muestra en un modal. */
-export const URL_PAGINA_PORTAL = `${URL_SITIO_PORTAL}/SitePages/Home.aspx`;
+/**
+ * Página del portal. La abre el botón que lo muestra en un modal, y es el
+ * enlace que se reparte.
+ *
+ * `env=WebView` quita la cabecera de suite y la navegación de SharePoint, así
+ * que el portal ocupa la pantalla entera. Es el mismo parámetro con el que se
+ * publica el portal de Retail de la intranet.
+ */
+export const PARAMETRO_SIN_CROMO = 'env=WebView';
+export const URL_PAGINA_PORTAL = `${URL_SITIO_PORTAL}/SitePages/Home.aspx?${PARAMETRO_SIN_CROMO}`;
 
 /** Nombre por defecto de la lista de SharePoint (fase 2). */
 export const NOMBRE_LISTA = 'Paneles PowerBi LolaCasademunt';

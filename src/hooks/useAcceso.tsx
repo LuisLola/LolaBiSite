@@ -73,6 +73,9 @@ export interface Acceso extends EstadoUsuario {
  * Un área sin equipo asignado se ve: no hay nada que aplicar todavía y dejarla
  * invisible haría parecer que el portal está roto. Administración lo avisa.
  *
+ * El administrador lo ve todo, sin filtrar por equipo: es quien mantiene el
+ * catálogo y necesita ver lo que hay, no solo lo suyo.
+ *
  * Esto es cosmético: el permiso de verdad lo aplica Power BI al abrir.
  */
 export function useAcceso(): Acceso {
@@ -82,14 +85,17 @@ export function useAcceso(): Acceso {
   return useMemo(() => {
     const porNombre = new Map(departamentos.map((d) => [d.nombre, d]));
     const { usuario } = estado;
+    const esAdministrador = usuario?.esAdministrador ?? false;
 
     const puedeVerDepartamento = (departamento: Departamento): boolean => {
+      if (esAdministrador) return true;
       if (!departamento.grupo) return true;
       if (!usuario) return false;
       return perteneceAGrupo(usuario, departamento.grupo);
     };
 
     const puedeVerPanel = (panel: Panel): boolean => {
+      if (esAdministrador) return true;
       if (panel.grupoAcceso) {
         return usuario ? perteneceAGrupo(usuario, panel.grupoAcceso) : false;
       }
@@ -100,7 +106,7 @@ export function useAcceso(): Acceso {
 
     return {
       ...estado,
-      esAdministrador: estado.usuario?.esAdministrador ?? false,
+      esAdministrador,
       puedeVerDepartamento,
       puedeVerPanel,
     };

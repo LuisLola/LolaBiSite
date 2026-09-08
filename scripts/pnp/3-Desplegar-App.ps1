@@ -11,18 +11,6 @@ param(
   [switch]$ConfigurarPagina
 )
 
-# PnP.PowerShell 2.12.0 A PROPOSITO, no la 3.x.
-#
-# En la 3.x, Add-PnPApp termina sin error, devuelve null y NO sube nada: el
-# catalogo se queda igual y el script parece haber funcionado. El repo de la
-# intranet documenta lo mismo para la 3.1.0 (NullReferenceException), y fija la
-# 2.12.0 por esa razon.
-#
-# Instalarla:  Install-Module PnP.PowerShell -RequiredVersion 2.12.0 -Scope CurrentUser -AllowClobber
-Remove-Module PnP.PowerShell -Force -ErrorAction SilentlyContinue
-Import-Module PnP.PowerShell -RequiredVersion 2.12.0 -Force
-Write-Host "PnP.PowerShell $((Get-Module PnP.PowerShell).Version) (fijada: la 3.x no sube el paquete)"
-
 . "$PSScriptRoot\PortalBI.Comun.ps1"
 
 $raiz  = Resolve-Path "$PSScriptRoot\..\.."
@@ -42,14 +30,21 @@ if ((Get-Item $sppkg).LastWriteTime -lt (Get-Item $solucion).LastWriteTime) {
 $catalogo = Conectar $UrlCatalogo
 Write-Host "+ subiendo $(Split-Path $sppkg -Leaf)"
 
-# En DOS pasos a proposito. Add-PnPApp con -Publish falla en PnP 3.x
-# ("appMetadata"), y el repo de la intranet documenta lo mismo con la 3.1.0
-# (NullReferenceException). Subir y publicar por separado si funciona.
+# En DOS pasos a proposito: Add-PnPApp con -Publish falla con "appMetadata".
 $app = Add-PnPApp -Path $sppkg -Scope Tenant -Overwrite -Connection $catalogo
-if (-not $app) { throw "Add-PnPApp no ha devuelto nada: el paquete no se ha subido. Comprueba la version de PnP.PowerShell." }
-Write-Host "   subido: $($app.Title)"
 
-# OJO: Publish-PnPApp de la 2.12.0 no acepta -Force.
+if (-not $app) {
+  # Add-PnPApp devuelve null, sin error, cuando SharePoint sube el fichero pero
+  # RECHAZA el manifiesto. Pasa, por ejemplo, si solution.name lleva espacios o
+  # signos: ese valor va al atributo Name del manifiesto XML y se valida contra
+  # NameDefinition. El motivo real esta en la propia biblioteca:
+  $item = Get-PnPListItem -List 'AppCatalog' -Connection $catalogo |
+    Where-Object { $_.FieldValues['FileLeafRef'] -eq (Split-Path $sppkg -Leaf) }
+  $motivo = if ($item) { $item.FieldValues['AppPackageErrorMessage'] } else { '(el fichero no esta en el catalogo)' }
+  throw "SharePoint ha rechazado el paquete. Motivo: $motivo"
+}
+
+Write-Host "   subido: $($app.Title)"
 Publish-PnPApp -Identity $app.Id -Scope Tenant -SkipFeatureDeployment -Connection $catalogo | Out-Null
 Write-Host "   publicado en el catalogo de tenant"
 
@@ -83,8 +78,19 @@ if ($pendientes.Count -eq 0) {
 } else {
   foreach ($peticion in $pendientes) {
     Write-Host "+ aprobando $($peticion.Scope)"
-    Approve-PnPTenantServicePrincipalPermissionRequest -RequestId $peticion.Id -Force -Connection $admin | Out-Null
+    try {
+      Approve-PnPTenantServicePrincipalPermissionRequest -RequestId $peticion.Id -Force -Connection $admin | Out-Null
+    } catch {
+      # Visto en este tenant: "El principal servicio de solicitud de permiso ...
+      # no se pudo encontrar". La aprobacion por API depende del principal de
+      # extensibilidad de SharePoint, que no siempre esta accesible por aqui.
+      # Desde la UI si se puede, y es un clic.
+      Write-Warning "No se ha podido aprobar '$($peticion.Scope)' por API: $($_.Exception.Message)"
+      Write-Host "  Apruebalo a mano en: $UrlAdmin/_layouts/15/online/AdminHome.aspx#/webApiPermissionManagement" -ForegroundColor Yellow
+    }
   }
+  Write-Host "  Sin estos permisos el portal funciona en consulta, pero nadie" -ForegroundColor DarkGray
+  Write-Host "  aparece en ningun equipo de Teams y el filtrado por area no aplica." -ForegroundColor DarkGray
 }
 
 # --- 3. Pagina del portal ----------------------------------------------------

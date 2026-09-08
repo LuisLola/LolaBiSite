@@ -41,9 +41,11 @@ export function PortalEnModal({ urlPortal, etiqueta = 'Paneles BI', titulo = 'Po
     return () => document.removeEventListener('keydown', alPulsar);
   }, [abierto]);
 
-  // env=Embedded quita la barra de suite y la navegacion de la pagina moderna.
-  const separador = urlPortal.indexOf('?') === -1 ? '?' : '&';
-  const src = `${urlPortal}${separador}env=Embedded`;
+  // env=WebView quita la barra de suite y la navegacion de SharePoint. Si la URL
+  // ya lo trae (URL_PAGINA_PORTAL lo incluye), no se duplica.
+  const src = urlPortal.indexOf('env=') === -1
+    ? `${urlPortal}${urlPortal.indexOf('?') === -1 ? '?' : '&'}env=WebView`
+    : urlPortal;
 
   return (
     // portalBiTokens: sin el, el boton se renderiza fuera del portal (en la barra

@@ -163,18 +163,20 @@
   gap: var(--espacio-4);
 }
 
+/*
+ * Las areas se acomodan al ancho disponible en vez de ser siempre 3: en un
+ * monitor ancho caben 4 y no quedan tarjetas estiradas. auto-fill con un minimo
+ * de 260px cubre desde el movil (1 columna) hasta pantallas grandes.
+ */
 .rejillaAreas {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--espacio-4);
 }
 
 @media (max-width: 1180px) {
   .cuerpo {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .rejillaAreas {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .heroe {
     grid-template-columns: minmax(0, 1fr);
@@ -183,7 +185,6 @@
 }
 
 @media (max-width: 760px) {
-  .rejillaAreas,
   .duo {
     grid-template-columns: minmax(0, 1fr);
   }

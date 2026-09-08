@@ -11,13 +11,18 @@
   border-bottom: 1px solid var(--divisor-fuerte);
 }
 
+/*
+ * El margen lateral crece con la pantalla en vez de ser fijo: en un monitor
+ * ancho el contenido llega hasta --ancho-maximo y en uno pequeno el aire se
+ * reduce hasta --espacio-4 en vez de dejar el contenido pegado al borde.
+ */
 .barraInterior {
   display: flex;
   align-items: center;
   gap: var(--espacio-5);
   max-width: var(--ancho-maximo);
   margin: 0 auto;
-  padding: var(--espacio-3) var(--espacio-5);
+  padding: var(--espacio-3) clamp(var(--espacio-4), 3vw, var(--espacio-7));
 }
 
 .marca {
@@ -139,13 +144,13 @@
 .contenido {
   max-width: var(--ancho-maximo);
   margin: 0 auto;
-  padding: var(--espacio-6) var(--espacio-5) var(--espacio-7);
+  padding: var(--espacio-6) clamp(var(--espacio-4), 3vw, var(--espacio-7)) var(--espacio-7);
 }
 
 .pieSitio {
   max-width: var(--ancho-maximo);
   margin: 0 auto;
-  padding: var(--espacio-4) var(--espacio-5) var(--espacio-6);
+  padding: var(--espacio-4) clamp(var(--espacio-4), 3vw, var(--espacio-7)) var(--espacio-6);
   border-top: 1px solid var(--divisor-fuerte);
   display: flex;
   gap: var(--espacio-4);

@@ -24,6 +24,8 @@ export interface ContextoSpfxIdentidad {
   };
   pageContext: {
     user: { loginName: string; displayName: string; email: string };
+    /** Lo expone SPFx; se lee para el respaldo de administrador de sitio. */
+    legacyPageContext?: { isSiteAdmin?: boolean };
   };
 }
 
@@ -138,12 +140,19 @@ export class IdentidadSharePoint implements ProveedorIdentidad {
       console.error('[Portal BI] No se han podido leer los grupos del usuario', error);
     }
 
+    // Respaldo por administrador del sitio: quien administra el sitio del
+    // portal entra en Administracion aunque el grupo de administradores no
+    // exista todavia. Sin esto, hasta que se cree el grupo, la pantalla de
+    // administracion no la ve nadie y no hay forma de configurar nada.
+    const esAdminDelSitio = this.contexto.pageContext.legacyPageContext?.isSiteAdmin === true;
+
     return {
       id: perfil.loginName,
       nombre: perfil.displayName,
       correo: perfil.email,
       grupos,
-      esAdministrador: grupos.some((grupo) => esElMismoGrupo(grupo, this.grupoAdministradores)),
+      esAdministrador:
+        esAdminDelSitio || grupos.some((grupo) => esElMismoGrupo(grupo, this.grupoAdministradores)),
     };
   }
 }
