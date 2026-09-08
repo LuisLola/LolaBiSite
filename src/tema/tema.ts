@@ -106,12 +106,6 @@ export const TEMA_DEFECTO: Tema = {
  */
 export const TEMA_BASE = 'Base';
 
-/**
- * Fila reservada de la lista de marca que guarda que tema esta activo. No es un
- * token, asi que sanearTema la ignora y nunca llega al CSS.
- */
-export const TOKEN_TEMA_ACTIVO = 'tema-activo';
-
 /** Lo que hay en la lista "Marca LC": varios temas y cual esta puesto. */
 export interface Marca {
   /** Nombre del tema activo. Si no existe, se usa TEMA_BASE. */

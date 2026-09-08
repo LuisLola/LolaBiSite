@@ -8,8 +8,8 @@ colores, qué se ve al cambiarlos y qué significa cada token.
 | Quiero… | Toco… | Lo veo… |
 |---|---|---|
 | Cambiar de tema | **Administración → Accesos → Tema del portal** | Al instante, y para todo el mundo |
-| Cambiar un color del Portal BI | La lista **Marca LC** del sitio raíz: la fila del token, columna `Valor` | **F5 en la página. Sin despliegue.** El navegador guarda el último tema hasta 1 h, así que `Ctrl+F5` la primera vez |
-| Crear un tema nuevo | Filas en **Marca LC** con la columna `Tema` rellena (solo lo que cambia) | Aparece en el desplegable de Administración |
+| Cambiar un color del Portal BI | La lista **Marca LC** del sitio raíz: la fila de su tema, la columna de ese token | **F5 en la página. Sin despliegue.** El navegador guarda el último tema hasta 1 h, así que `Ctrl+F5` la primera vez |
+| Crear un tema nuevo | **Nueva** en **Marca LC**: nombre en `Tema` y solo las celdas que cambien | Aparece en el desplegable de Administración |
 | Que el cromo de SharePoint (cabecera, botones, enlaces) use esos colores | `scripts\pnp\4-Publicar-Marca.ps1 -Sitios https://…/sites/X` | Al recargar el sitio. Requiere rol de Administrador de SharePoint |
 | Cambiar el color de arranque que viaja dentro del paquete | `src/ui/tokens.global.css` | **Requiere volver a empaquetar y subir el `.sppkg`.** Normalmente no hace falta: para eso está la lista |
 
@@ -20,34 +20,39 @@ no hay permiso de lectura o si una fila está en blanco.
 ## La lista "Marca LC"
 
 Vive en el sitio raíz (`https://lolacasademunt.sharepoint.com`) porque todo el
-mundo tiene lectura ahí. Cuatro columnas:
+mundo tiene lectura ahí.
 
-- **Tema**: a qué tema pertenece la fila. Vacío = `Base`
-- **Token** (el `Title` de la lista): el nombre del color, por ejemplo `primario`
-- **Valor**: `#6f263d`, `rgb(111, 38, 61)` o `var(--acento)` para apuntar a otro token
-- **Nota**: para qué sirve. Es informativa, el portal no la lee
+**Una fila por tema, una columna por token:**
+
+| Tema | Activo | primario | primario-texto | lienzo | … |
+|---|---|---|---|---|---|
+| Base | Sí | `#6f263d` | `#fff6ed` | `#fff6ed` | (los 31) |
+| Multimarca | No | `#ba1c43` | | | |
+
+- **Tema** (el `Title` de la lista): el nombre del tema
+- **Activo**: cuál está puesto. Solo uno a la vez, y lo gestiona la aplicación
+- **Una columna por token**: `primario`, `primario-texto`, `lienzo`… 31 en total
+- **Nota**: para qué sirve el tema. Informativa, el portal no la lee
 
 ## Varios temas
 
-`Base` lleva el juego completo de colores. **Cualquier otro tema declara solo lo
-que cambia** y hereda el resto de `Base`, así que crear un tema son una o dos
-filas, no treinta:
+`Base` lleva el juego completo. **Cualquier otro tema rellena solo las celdas que
+cambian** y hereda el resto de `Base`; lo que `Base` no traiga sale de los
+valores del paquete. Un tema de departamento puede ser una fila con una sola
+celda rellena.
 
-| Tema | Token | Valor |
-|---|---|---|
-| Base | primario | `#6f263d` |
-| Base | primario-texto | `#fff6ed` |
-| Base | … | (el resto) |
-| Multimarca | primario | `#ba1c43` |
-| Logistica | primario | `#dfa0c9` |
-| Logistica | primario-texto | `#1a1416` |
+Crear un tema: **Nueva** en la lista, nombre en `Tema`, y rellenar lo que cambie.
 
-**Qué tema está puesto se elige en la aplicación**, en *Administración →
-Accesos → Tema del portal*. Lo que se elija ahí lo ve todo el mundo: se guarda
-en la fila reservada `tema-activo` de esta misma lista. Esa fila no es un color;
-el portal la ignora al aplicar los tokens.
+**Qué tema está puesto se elige en la aplicación**, en *Administración → Accesos
+→ Tema del portal*. Lo que se elija ahí lo ve todo el mundo: marca la casilla
+`Activo` de esa fila y desmarca las demás.
 
-Para agrupar la vista por tema: *Todos los elementos → Agrupar por → Tema*.
+Detalle técnico por si alguien mira los nombres internos: SharePoint no admite
+guiones, así que la columna `primario-texto` se guarda internamente como
+`primario_x002d_texto`. El portal lo decodifica al leer, de modo que el nombre
+visible de la columna es exactamente el nombre del token. Si añades una columna
+a mano, ponle como nombre el token tal cual (con guion) y SharePoint hará la
+codificación sola.
 
 Aviso de contraste: si un tema cambia `primario` conviene comprobar que
 `primario-texto` sigue leyéndose encima. `4-Publicar-Marca.ps1` lo calcula y

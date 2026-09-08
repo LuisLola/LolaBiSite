@@ -9,9 +9,16 @@
   font-size: 13px;
 }
 
+/*
+ * La tabla va a sangre dentro de su tarjeta: la linea de la cabecera y las de
+ * las filas llegan de borde a borde a proposito. Para que el CONTENIDO no vaya
+ * pegado al borde, la primera y la ultima celda llevan mas aire lateral (ver
+ * mas abajo), en vez de meter padding al envoltorio, que recortaria las lineas.
+ */
+
 /* Cabeceras: 9px/800 mayusculas burdeos, borde inferior 2px, sin verticales. */
 .tabla thead th {
-  padding: 0 var(--espacio-3) 7px;
+  padding: var(--espacio-3) var(--espacio-3) 7px;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 1.2px;
@@ -27,6 +34,17 @@
   padding: 10px var(--espacio-3);
   border-bottom: 1px solid var(--divisor);
   vertical-align: middle;
+}
+
+/* Aire contra el borde de la tarjeta, sin tocar la separacion entre columnas. */
+.tabla thead th:first-child,
+.tabla tbody td:first-child {
+  padding-left: var(--espacio-5);
+}
+
+.tabla thead th:last-child,
+.tabla tbody td:last-child {
+  padding-right: var(--espacio-5);
 }
 
 .tabla:not(.cebraManual) tbody tr:nth-child(even) {

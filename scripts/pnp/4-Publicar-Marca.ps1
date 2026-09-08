@@ -13,6 +13,8 @@
 
 param(
   [switch]$CrearLista,
+  # Borra la lista antes de crearla. Necesario al venir de la forma clave/valor.
+  [switch]$Recrear,
   [switch]$SoloMostrar,
   [switch]$DesdeCss,
   [string[]]$Sitios = @(),
@@ -27,114 +29,133 @@ $UrlSitioMarca = $UrlTenant          # el sitio raiz: todo el mundo tiene lectur
 $ListaMarca    = 'Marca LC'
 $RutaTokens    = Join-Path (Resolve-Path "$PSScriptRoot\..\..") 'src\ui\tokens.global.css'
 
-# Tokens que se siembran en la lista, con su descripcion. Es el subconjunto que
-# de verdad se toca; el resto de src/tema/tema.ts sigue valiendo si se anade una
-# fila a mano con la misma clave.
-$Semilla = [ordered]@{
-  'primario'          = 'Color de marca: heroe, botones, enlaces, totales'
-  'primario-texto'    = 'Texto y bordes SOBRE el color de marca'
-  'acento'            = 'Color de apoyo de la marca'
-  'positivo'          = 'Verde de "tienes acceso" / "activo"'
-  'negativo'          = 'Rojo de error y acciones destructivas'
-  'aviso-texto'       = 'Ambar de "en pruebas"'
-  'lienzo'            = 'Fondo general del portal'
-  'papel'             = 'Fondo de zonas hundidas y chips neutros'
-  'tarjeta'           = 'Fondo de tarjetas, tablas y modales'
-  'texto'             = 'Texto principal'
-  'texto-secundario'  = 'Texto de apoyo'
-}
+# Orden en el que salen las columnas: primero lo que de verdad se toca.
+$OrdenPreferido = @(
+  'primario', 'primario-texto', 'acento', 'positivo', 'negativo', 'aviso-texto',
+  'lienzo', 'papel', 'tarjeta', 'texto', 'texto-secundario'
+)
 
-# --- Leer los colores --------------------------------------------------------
+# --- Leer los tokens ---------------------------------------------------------
 
-function Leer-Tokens-Css {
+<#
+  Los nombres de token salen de src/ui/tokens.global.css, del bloque BASE (lo
+  que hay antes del marcador de DERIVADOS). Asi la lista y el codigo no pueden
+  divergir: no hay una segunda lista de nombres que mantener aqui.
+#>
+function Leer-Tokens-Base {
   $css = Get-Content -Raw -LiteralPath $RutaTokens
-  $valores = @{}
-  foreach ($m in [regex]::Matches($css, '--([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})\s*;')) {
-    $valores[$m.Groups[1].Value] = $m.Groups[2].Value.ToLower()
+  # El marcador exacto de la seccion, no la palabra: "DERIVADOS" tambien sale en
+  # el comentario de cabecera, y cortar ahi dejaba la lista de tokens vacia.
+  $corte = $css.IndexOf('---------- DERIVADOS')
+  if ($corte -gt 0) { $css = $css.Substring(0, $corte) }
+  else { throw "No se encuentra el marcador de DERIVADOS en $RutaTokens" }
+
+  $valores = [ordered]@{}
+  foreach ($m in [regex]::Matches($css, '--([a-z0-9-]+):\s*([^;]+);')) {
+    $valores[$m.Groups[1].Value] = $m.Groups[2].Value.Trim()
   }
   return $valores
+}
+
+# Solo los tokens de color, para derivar la paleta de SharePoint.
+function Leer-Tokens-Css {
+  $valores = @{}
+  foreach ($par in (Leer-Tokens-Base).GetEnumerator()) {
+    if ($par.Value -match '^#[0-9a-fA-F]{6}$') { $valores[$par.Key] = $par.Value.ToLower() }
+  }
+  return $valores
+}
+
+<#
+  SharePoint no admite guiones en los nombres internos: los codifica como
+  _x002d_. Se crea la columna con ese nombre interno y con el token como nombre
+  visible, y MarcaRepository decodifica al leer. Sin tabla de mapeo.
+#>
+function Columna-DeToken {
+  param([Parameter(Mandatory)][string]$Token)
+  return $Token.Replace('-', '_x002d_')
 }
 
 $marca = Conectar $UrlSitioMarca
 
 if ($CrearLista) {
   Write-Host "`n[$ListaMarca]"
+
+  $tokensBase = Leer-Tokens-Base
+  # Los importantes primero y el resto detras, en el orden del CSS.
+  $tokens = @($OrdenPreferido | Where-Object { $tokensBase.Contains($_) })
+  $tokens += @($tokensBase.Keys | Where-Object { $OrdenPreferido -notcontains $_ })
+
+  $existe = $null
+  try { $existe = Get-PnPList -Identity $ListaMarca -Connection $marca -ErrorAction Stop } catch {}
+
+  if ($existe -and $Recrear) {
+    Write-Host "   - borrando '$ListaMarca' (era clave/valor; ahora es una fila por tema)"
+    Remove-PnPList -Identity $ListaMarca -Force -Connection $marca
+    $existe = $null
+  }
+  if ($existe) {
+    throw "'$ListaMarca' ya existe. Si viene de la forma clave/valor, re-ejecuta con -Recrear (borra la lista; sus valores son los mismos que trae el paquete)."
+  }
+
   # Sin quick launch: vive en la raiz de la intranet y no debe salir en su
   # navegacion. Se llega por la URL o desde docs/marca.md.
   Asegurar-Lista -Conexion $marca -Titulo $ListaMarca -UrlInterna 'MarcaLC' -SinQuickLaunch | Out-Null
-  Renombrar-Title -Conexion $marca -Lista $ListaMarca -Etiqueta 'Token'
-  Asegurar-Campo -Conexion $marca -Lista $ListaMarca -Interno 'Valor' `
-    -Xml '<Field Type="Text" Name="Valor" StaticName="Valor" DisplayName="Valor" MaxLength="128" Required="FALSE" />'
+  Renombrar-Title -Conexion $marca -Lista $ListaMarca -Etiqueta 'Tema'
+
+  # UNA FILA POR TEMA: Title es el nombre del tema, Activo marca el que esta
+  # puesto, y cada token es una columna.
+  Asegurar-Campo -Conexion $marca -Lista $ListaMarca -Interno 'Activo' `
+    -Xml '<Field Type="Boolean" Name="Activo" StaticName="Activo" DisplayName="Activo" Required="FALSE"><Default>0</Default></Field>'
   Asegurar-Campo -Conexion $marca -Lista $ListaMarca -Interno 'Nota' `
     -Xml '<Field Type="Note" Name="Nota" StaticName="Nota" DisplayName="Nota" NumLines="2" RichText="FALSE" RichTextMode="Compatible" Required="FALSE" />'
-  # Cada tema declara SOLO lo que cambia y hereda de "Base": un tema nuevo son
-  # una o dos filas, no treinta. Vacio = Base.
-  Asegurar-Campo -Conexion $marca -Lista $ListaMarca -Interno 'Tema' `
-    -Xml '<Field Type="Text" Name="Tema" StaticName="Tema" DisplayName="Tema" MaxLength="64" Required="FALSE"><Default>Base</Default></Field>'
+
+  foreach ($token in $tokens) {
+    $interno = Columna-DeToken $token
+    $xml = "<Field Type=""Text"" Name=""$interno"" StaticName=""$interno"" DisplayName=""$token"" MaxLength=""128"" Required=""FALSE"" />"
+    Asegurar-Campo -Conexion $marca -Lista $ListaMarca -Interno $interno -Xml $xml
+  }
+
   Set-PnPList -Identity $ListaMarca -EnableVersioning $true -MajorVersions 100 -Connection $marca | Out-Null
 
   $vista = Get-PnPView -List $ListaMarca -Connection $marca | Where-Object { $_.DefaultView }
-  Set-PnPView -List $ListaMarca -Identity $vista.Id -Connection $marca -Fields @('Tema', 'Title', 'Valor', 'Nota', 'Modified') | Out-Null
+  $columnasVista = @('Title', 'Activo') + @($tokens | ForEach-Object { Columna-DeToken $_ }) + @('Modified')
+  Set-PnPView -List $ListaMarca -Identity $vista.Id -Connection $marca -Fields $columnasVista | Out-Null
+  Write-Host "   = vista con $($columnasVista.Count) columnas"
 
-  # Se siembra con los valores que viajan en el paquete, para que la lista
-  # arranque mostrando exactamente lo que ya se ve en pantalla.
-  # Cuidado con el nombre: PowerShell no distingue mayusculas, asi que una
-  # variable $desdeCss seria el mismo que el parametro -DesdeCss (un switch).
-  $tokensCss = Leer-Tokens-Css
-  $existentes = (Get-PnPListItem -List $ListaMarca -Fields 'Title' -PageSize 500 -Connection $marca |
-    ForEach-Object { $_['Title'] })
-  foreach ($token in $Semilla.Keys) {
-    if ($existentes -contains $token) { Write-Host "   = $token"; continue }
-    Write-Host "   + $token = $($tokensCss[$token])"
-    Add-PnPListItem -List $ListaMarca -Connection $marca -Values @{
-      Title = $token
-      Valor = $tokensCss[$token]
-      Nota  = $Semilla[$token]
-      Tema  = 'Base'
-    } | Out-Null
+  # Fila Base: el juego completo, con los valores que viajan en el paquete, para
+  # que la lista arranque mostrando exactamente lo que ya se ve en pantalla.
+  $valoresBase = @{
+    Title  = 'Base'
+    Activo = $true
+    Nota   = 'Tema de partida. Los demas temas solo rellenan lo que cambian.'
   }
-
-  # Las filas que ya existian se quedan sin Tema; el portal las trata como Base,
-  # pero se rellena para que la vista agrupada se lea bien.
-  Get-PnPListItem -List $ListaMarca -Connection $marca | Where-Object { -not $_['Tema'] } | ForEach-Object {
-    Set-PnPListItem -List $ListaMarca -Identity $_.Id -Values @{ Tema = 'Base' } -Connection $marca | Out-Null
-    Write-Host "   = Tema=Base en '$($_['Title'])'"
-  }
-
-  # Fila reservada: guarda que tema esta puesto. No es un color, y el portal la
-  # ignora al aplicar tokens.
-  if ($existentes -notcontains 'tema-activo') {
-    Add-PnPListItem -List $ListaMarca -Connection $marca -Values @{
-      Title = 'tema-activo'
-      Valor = 'Base'
-      Nota  = 'Tema del portal. Lo cambia Administracion -> Accesos; no es un color.'
-      Tema  = 'Base'
-    } | Out-Null
-    Write-Host "   + tema-activo = Base"
-  }
+  foreach ($token in $tokens) { $valoresBase[(Columna-DeToken $token)] = [string]$tokensBase[$token] }
+  Add-PnPListItem -List $ListaMarca -Connection $marca -Values $valoresBase | Out-Null
+  Write-Host "   + fila 'Base' con $($tokens.Count) tokens, marcada como activa"
 }
 
 if ($DesdeCss) {
   $colores = Leer-Tokens-Css
   Write-Host "`nColores leidos de src\ui\tokens.global.css"
 } else {
-  # Mismo orden de capas que el portal: Base y encima el tema activo.
+  # Una fila por tema. Mismo orden de capas que el portal: Base y encima el
+  # tema activo, que es el que tiene Activo marcado.
   $filas = Get-PnPListItem -List $ListaMarca -PageSize 500 -Connection $marca
-  $activo = ($filas | Where-Object { [string]$_['Title'] -eq 'tema-activo' } | ForEach-Object { [string]$_['Valor'] } | Select-Object -First 1)
+  $activo = ($filas | Where-Object { $_['Activo'] -eq $true } | ForEach-Object { [string]$_['Title'] } | Select-Object -First 1)
   if (-not $activo) { $activo = 'Base' }
   if ($Tema) { $activo = $Tema }   # -Tema fuerza uno concreto
   Write-Host "`nTema: $activo"
 
+  $nombresToken = @((Leer-Tokens-Base).Keys)
   $colores = @{}
   foreach ($capa in @('Base', $activo) | Select-Object -Unique) {
-    foreach ($fila in $filas) {
-      $clave = [string]$fila['Title']
-      $valor = [string]$fila['Valor']
-      $temaFila = ([string]$fila['Tema']).Trim()
-      if (-not $temaFila) { $temaFila = 'Base' }
-      if ($clave -eq 'tema-activo' -or -not $clave -or -not $valor) { continue }
-      if ($temaFila -ne $capa) { continue }
-      $colores[$clave.Trim()] = $valor.Trim().ToLower()
+    $fila = $filas | Where-Object { [string]$_['Title'] -eq $capa } | Select-Object -First 1
+    if (-not $fila) { continue }
+    foreach ($token in $nombresToken) {
+      $valor = ([string]$fila[(Columna-DeToken $token)]).Trim()
+      # Celda vacia = hereda de la capa de abajo.
+      if ($valor) { $colores[$token] = $valor.ToLower() }
     }
   }
   Write-Host "$($colores.Count) colores leidos de la lista '$ListaMarca'"

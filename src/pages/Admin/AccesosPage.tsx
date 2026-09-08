@@ -110,8 +110,9 @@ function TemaDelPortal() {
       <div>
         <SectionLabel>Tema del portal</SectionLabel>
         <p className={estilos.subtitulo}>
-          Los colores salen de la lista <strong>Marca LC</strong>. Cada tema declara solo lo que
-          cambia y hereda del tema <strong>Base</strong>. Lo que elijas aquí lo ve todo el mundo.
+          Los colores salen de la lista <strong>Marca LC</strong>: una fila por tema y una columna
+          por color. Cada tema rellena solo lo que cambia y hereda de <strong>Base</strong>. Lo que
+          elijas aquí lo ve todo el mundo.
         </p>
       </div>
       <div className={estilos.temaControles}>
@@ -142,9 +143,9 @@ function TemaDelPortal() {
         </Campo>
         {temas.length === 1 ? (
           <p className={estilos.nota}>
-            Solo hay un tema. Para añadir otro, crea filas en <strong>Marca LC</strong> con la
-            columna <strong>Tema</strong> rellena: por ejemplo <code>Multimarca</code> con la fila{' '}
-            <code>primario</code>.
+            Solo hay un tema. Para añadir otro, crea una fila en <strong>Marca LC</strong> con su
+            nombre y rellena solo las celdas que cambien; el resto lo hereda de{' '}
+            <strong>Base</strong>.
           </p>
         ) : null}
         {mensaje ? <p className={estilos.nota}>{mensaje}</p> : null}

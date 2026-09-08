@@ -2,10 +2,18 @@
  * Lee y escribe la lista "Marca LC": los colores corporativos y que tema esta
  * puesto.
  *
- * Es una lista clave/valor con una columna "Tema" a proposito: digitalizacion
- * edita una celda y lo ve con F5, sin JSON que romper con una coma y sin sesion
- * de PowerShell. Cada tema declara SOLO lo que cambia y hereda del tema Base,
- * asi que un tema nuevo son una o dos filas, no treinta.
+ * Forma de la lista: UNA FILA POR TEMA y una COLUMNA POR TOKEN.
+ *
+ *   Title | Activo | primario | primario-texto | lienzo | ...
+ *   Base  | Si     | #6f263d  | #fff6ed        | #fff6ed| ...
+ *
+ * Un tema solo necesita rellenar las celdas que cambian; las vacias se heredan
+ * del tema Base, y lo que Base no traiga sale de src/tema/tema.ts.
+ *
+ * OJO con los nombres internos: SharePoint no admite guiones y codifica
+ * "primario-texto" como "primario_x002d_texto". Aqui se decodifica de vuelta,
+ * asi que no hace falta mantener ninguna tabla token<->columna: el nombre de la
+ * columna ES el nombre del token.
  *
  * La lista vive en un sitio unico del tenant y se lee por URL absoluta, asi que
  * el mismo origen sirve a cualquier sitio donde se incruste el portal.
@@ -21,16 +29,31 @@ import { NOMBRE_LISTA_MARCA, URL_SITIO_MARCA } from '../../config/tenant.config'
 import {
   MARCA_VACIA,
   TEMA_BASE,
-  TOKEN_TEMA_ACTIVO,
+  TOKENS,
   type Marca,
   type ServicioMarca,
+  type Tema,
 } from '../../tema/tema';
 
-interface FilaMarca {
+/** Columna que marca el tema puesto. */
+const CAMPO_ACTIVO = 'Activo';
+
+const ES_TOKEN = new Set<string>(TOKENS as readonly string[]);
+
+/** "primario_x002d_texto" -> "primario-texto" */
+function tokenDeColumna(interno: string): string {
+  return interno.replace(/_x002d_/gi, '-');
+}
+
+/** "primario-texto" -> "primario_x002d_texto" */
+export function columnaDeToken(token: string): string {
+  return token.replace(/-/g, '_x002d_');
+}
+
+interface FilaTema {
   Id: number;
   Title: string;
-  Valor?: string | null;
-  Tema?: string | null;
+  [columna: string]: unknown;
 }
 
 export class MarcaRepository implements ServicioMarca {
@@ -52,25 +75,26 @@ export class MarcaRepository implements ServicioMarca {
    */
   async leer(): Promise<Marca> {
     try {
-      const filas: FilaMarca[] = await this.items().select('Id', 'Title', 'Valor', 'Tema').top(500)();
+      // select('*') para no tener que enumerar las columnas: cada token nuevo
+      // es una columna mas y esto la coge sola.
+      const filas: FilaTema[] = await this.items().select('*').top(200)();
 
       const marca: Marca = { activo: TEMA_BASE, temas: {} };
       for (const fila of filas) {
-        const clave = String(fila.Title ?? '').trim();
-        const valor = String(fila.Valor ?? '').trim();
-        if (!clave || !valor) continue;
+        const nombre = String(fila.Title ?? '').trim();
+        if (!nombre) continue;
 
-        if (clave === TOKEN_TEMA_ACTIVO) {
-          marca.activo = valor;
-          continue;
+        const valores: Record<string, string> = {};
+        for (const columna of Object.keys(fila)) {
+          const token = tokenDeColumna(columna);
+          if (!ES_TOKEN.has(token)) continue;
+          const valor = String(fila[columna] ?? '').trim();
+          // Celda vacia = "usa el valor de abajo", no "sin color".
+          if (valor) valores[token] = valor;
         }
 
-        // Sin columna Tema (o vacia) la fila pertenece al tema Base: asi la
-        // lista que ya existia sigue funcionando sin tocar ni una fila.
-        const tema = String(fila.Tema ?? '').trim() || TEMA_BASE;
-        const valores = marca.temas[tema] ?? {};
-        (valores as Record<string, string>)[clave] = valor;
-        marca.temas[tema] = valores;
+        marca.temas[nombre] = valores as Partial<Tema>;
+        if (fila[CAMPO_ACTIVO] === true) marca.activo = nombre;
       }
       return marca;
     } catch (error) {
@@ -81,23 +105,17 @@ export class MarcaRepository implements ServicioMarca {
   }
 
   /**
-   * Cambia el tema activo para todo el mundo. Lo llama la pantalla de
-   * administracion; requiere permiso de escritura en la lista.
+   * Cambia el tema activo para todo el mundo: marca su fila y desmarca el
+   * resto. Lo llama la pantalla de administracion; requiere permiso de
+   * escritura en la lista.
    */
   async guardarTemaActivo(tema: string): Promise<void> {
-    const filas: FilaMarca[] = await this.items()
-      .select('Id')
-      .filter(`Title eq '${TOKEN_TEMA_ACTIVO}'`)
-      .top(1)();
+    const filas: FilaTema[] = await this.items().select('Id', 'Title', CAMPO_ACTIVO).top(200)();
 
-    const fila = filas[0];
-    if (fila) await this.items().getById(fila.Id).update({ Valor: tema });
-    else {
-      await this.items().add({
-        Title: TOKEN_TEMA_ACTIVO,
-        Valor: tema,
-        Nota: 'Tema del portal. Lo cambia Administracion; no es un color.',
-      });
+    for (const fila of filas) {
+      const debeEstarActivo = String(fila.Title ?? '').trim() === tema;
+      if ((fila[CAMPO_ACTIVO] === true) === debeEstarActivo) continue;
+      await this.items().getById(fila.Id).update({ [CAMPO_ACTIVO]: debeEstarActivo });
     }
   }
 
