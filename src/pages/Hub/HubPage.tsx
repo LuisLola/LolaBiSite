@@ -1,16 +1,14 @@
 import { BookOpen } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useConfiguracion } from '../../app/configuracion';
 import { ListaPaneles } from '../../components/ListaPaneles';
-import { slugDepartamento } from '../../config/departamentos.config';
 import { agruparPorInforme } from '../../domain/paneles';
 import type { Panel } from '../../domain/types';
 import { useDepartamentosVisibles, usePanelesVisibles } from '../../hooks/useAcceso';
 import { useRecientes } from '../../hooks/useRecientes';
 import { Badge } from '../../ui/Badge';
 import { BotonEnlace } from '../../ui/Button';
-import { Buscador } from '../../ui/Campos';
 import { Card, CardCabecera, CardTitulo } from '../../ui/Card';
 import { SectionLabel } from '../../ui/SectionLabel';
 import { DepartamentoCard } from './DepartamentoCard';
@@ -39,8 +37,6 @@ export function HubPage() {
   const { paneles, cargando } = usePanelesVisibles();
   const { departamentos } = useDepartamentosVisibles();
   const { paneles: recientes } = useRecientes();
-  const navegar = useNavigate();
-  const [consulta, setConsulta] = useState('');
 
   const porDepartamento = useMemo(() => {
     const mapa = new Map<string, Panel[]>();
@@ -55,12 +51,6 @@ export function HubPage() {
   const totalInformes = useMemo(() => agruparPorInforme(paneles).length, [paneles]);
   const destacado = useMemo(() => elegirDestacado(paneles), [paneles]);
   const novedad = useMemo(() => elegirNovedad(paneles), [paneles]);
-
-  const coincidencias = useMemo(() => {
-    if (!consulta.trim()) return [];
-    const texto = consulta.trim().toLowerCase();
-    return paneles.filter((panel) => panel.nombre.toLowerCase().includes(texto)).slice(0, 5);
-  }, [consulta, paneles]);
 
   return (
     <div className={estilos.pagina}>
@@ -85,27 +75,6 @@ export function HubPage() {
           </div>
         </div>
 
-        <div className={estilos.heroeBuscador}>
-          <Buscador
-            etiquetaAccesible="Buscar un panel"
-            placeholder="Buscar un panel…"
-            value={consulta}
-            onChange={(evento) => setConsulta(evento.target.value)}
-            onKeyDown={(evento) => {
-              const primera = coincidencias[0];
-              if (evento.key === 'Enter' && primera) {
-                navegar(`/departamento/${slugDepartamento(primera.departamento)}`);
-              }
-            }}
-          />
-          {coincidencias.length > 0 ? (
-            <Card compacta>
-              <ListaPaneles paneles={coincidencias} mostrarDepartamento />
-            </Card>
-          ) : (
-            <span className={estilos.heroeBuscadorPie}>Ctrl K abre el buscador completo</span>
-          )}
-        </div>
       </section>
 
       <section className={estilos.estado} aria-label="Estado de los datos">

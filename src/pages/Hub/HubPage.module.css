@@ -4,12 +4,13 @@
   gap: var(--espacio-5);
 }
 
-/* Heroe: uno de los dos unicos bloques de color grande. */
+/*
+ * Heroe: uno de los dos unicos bloques de color grande.
+ *
+ * Una sola columna: el buscador que ocupaba la derecha se quito por duplicado
+ * (el de la barra superior, con Ctrl K, es el que se queda).
+ */
 .heroe {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: var(--espacio-6);
-  align-items: end;
   padding: var(--espacio-6);
   background: var(--primario);
   color: var(--primario-texto);
@@ -65,20 +66,6 @@
   letter-spacing: 1.6px;
   text-transform: uppercase;
   color: var(--sobre-primario-medio);
-}
-
-.heroeBuscador {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-2);
-}
-
-.heroeBuscadorPie {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--sobre-primario-suave);
 }
 
 /* Franja de estado de los datos. */
@@ -177,10 +164,6 @@
 @media (max-width: 1180px) {
   .cuerpo {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .heroe {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
   }
 }
 
