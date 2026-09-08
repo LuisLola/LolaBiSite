@@ -1,43 +1,52 @@
 /*
- * Paleta y escalas del portal. Es la unica fuente de color: ningun componente
- * escribe un hex que no salga de aqui (salvo el color de area, que viene de
- * departamentos.config.ts y tambien es de esta paleta).
+ * Tokens del portal. Es la unica fuente de color: ningun componente escribe un
+ * hex que no salga de aqui.
+ *
+ * Dos bloques con reglas distintas:
+ *
+ *  - BASE: los valores que se pueden cambiar. Estos mismos nombres son las
+ *    claves de src/tema/tema.ts y las filas de la lista "Marca LC", que los
+ *    sobrescribe en caliente. Este fichero es el valor de arranque que viaja en
+ *    el paquete: sirve para que el primer pintado sea correcto sin JavaScript.
+ *
+ *  - DERIVADOS: se calculan con color-mix() a partir de los base. NO se pueden
+ *    editar y no hace falta: cambiar --primario mueve con el el hover, los
+ *    velos, los totales de tabla y el tinte de los chips.
+ *
+ * El selector es de clase, no :root, para que el portal se pueda montar dentro
+ * de cualquier pagina de SharePoint sin contaminarla. portalBiTokens es el
+ * scope minimo (solo variables); portalBiRaiz anade el aspecto de pagina.
  */
-:root {
-  /* Superficies */
-  --lienzo: #fff6ed;
-  --pagina-doc: #f3ece4;
-  --tarjeta: #ffffff;
-  --borde-tarjeta: #e7dace;
+.portalBiRaiz,
+.portalBiTokens {
+  /* ---------- BASE: editables ---------- */
 
   /* Marca */
-  --burdeos: #6f263d;
-  --rosa: #dfa0c9;
-  --rojo: #ba1c43;
-  --coral: #ff5948;
+  --primario: #6f263d;
+  --primario-texto: #fff6ed;
+  --acento: #dfa0c9;
   --lila: #b4b5df;
   --azul: #10069f;
-
-  /* Texto */
-  --texto: #1a1416;
-  --texto-secundario: #6b5c60;
-  --texto-terciario: #8c7e82;
-  --texto-sobre-burdeos: #fff6ed;
 
   /* Estado */
   --positivo: #0f7a63;
   --negativo: #ba1c43;
   --alerta: #ff5948;
+  --aviso-texto: #8a4b00;
 
-  /* Tablas */
-  --fila-alterna: #fcf8f3;
-  --fila-total: #f6ebf1;
-  --borde-total: #e8d3de;
-
-  /* Divisores */
+  /* Superficies */
+  --lienzo: #fff6ed;
+  --papel: #f3ece4;
+  --tarjeta: #ffffff;
+  --borde-tarjeta: #e7dace;
   --divisor: #f2e9de;
-  --divisor-fuerte: #efe3d6;
-  --divisor-fuerte-2: #e0d3c6;
+  --divisor-fuerte: #e0d3c6;
+  --fila-alterna: #fcf8f3;
+
+  /* Texto */
+  --texto: #1a1416;
+  --texto-secundario: #6b5c60;
+  --texto-terciario: #8c7e82;
 
   /* Forma */
   --radio-tarjeta: 8px;
@@ -53,7 +62,34 @@
   --espacio-6: 32px;
   --espacio-7: 48px;
 
-  /* Tipografia */
+  /* Tipografia y ancho */
   --fuente: 'Montserrat Variable', 'Montserrat', 'Segoe UI', system-ui, sans-serif;
   --ancho-maximo: 1280px;
+
+  /* ---------- DERIVADOS: no editar ---------- */
+
+  /* Interaccion sobre el color de marca */
+  --primario-hover: color-mix(in srgb, var(--primario) 83%, black);
+
+  /* Velo y sombra de los modales */
+  --velo-modal: color-mix(in srgb, var(--texto) 38%, transparent);
+  --sombra-modal: color-mix(in srgb, var(--texto) 28%, transparent);
+
+  /* Texto, bordes y velos sobre fondo de marca */
+  --sobre-primario-fuerte: color-mix(in srgb, var(--primario-texto) 85%, transparent);
+  --sobre-primario-medio: color-mix(in srgb, var(--primario-texto) 72%, transparent);
+  --sobre-primario-suave: color-mix(in srgb, var(--primario-texto) 64%, transparent);
+  --sobre-primario-borde: color-mix(in srgb, var(--primario-texto) 45%, transparent);
+  --sobre-primario-divisor: color-mix(in srgb, var(--primario-texto) 28%, transparent);
+  --sobre-primario-velo: color-mix(in srgb, var(--primario-texto) 12%, transparent);
+
+  /* Filas de total de las tablas */
+  --fila-total: color-mix(in srgb, var(--primario) 7%, var(--tarjeta));
+  --borde-total: color-mix(in srgb, var(--primario) 18%, var(--tarjeta));
+
+  /* Tintes de los chips de estado */
+  --positivo-fondo: color-mix(in srgb, var(--positivo) 6%, var(--tarjeta));
+  --positivo-borde: color-mix(in srgb, var(--positivo) 22%, var(--tarjeta));
+  --aviso-fondo: color-mix(in srgb, var(--aviso-texto) 8%, var(--tarjeta));
+  --aviso-borde: color-mix(in srgb, var(--aviso-texto) 22%, var(--tarjeta));
 }

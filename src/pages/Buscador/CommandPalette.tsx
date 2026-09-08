@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { configDepartamento } from '../../config/departamentos.config';
 import { filtrarPorTexto } from '../../domain/paneles';
 import { urlAbrirPanel } from '../../domain/panelUrls';
@@ -56,7 +57,9 @@ export function CommandPalette({ alCerrar }: { alCerrar: () => void }) {
     }
   };
 
-  return (
+  // Al body, igual que Modal: si no, queda por debajo del cromo de SharePoint.
+  return createPortal(
+    <div className="portalBiTokens">
     <div
       className={estilos.fondo}
       role="presentation"
@@ -121,5 +124,7 @@ export function CommandPalette({ alCerrar }: { alCerrar: () => void }) {
         </div>
       </div>
     </div>
+    </div>,
+    document.body,
   );
 }

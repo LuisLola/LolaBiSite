@@ -13,7 +13,7 @@
 
 .descripcion {
   font-size: 12px;
-  color: rgba(255, 246, 237, 0.85);
+  color: var(--sobre-primario-fuerte);
 }
 
 .meta {
@@ -22,9 +22,9 @@
   gap: var(--espacio-3);
   margin-top: auto;
   padding-top: var(--espacio-3);
-  border-top: 1px solid rgba(255, 246, 237, 0.28);
+  border-top: 1px solid var(--sobre-primario-divisor);
   font-size: 11px;
-  color: rgba(255, 246, 237, 0.72);
+  color: var(--sobre-primario-medio);
 }
 
 .metaHora {
@@ -38,16 +38,16 @@
   gap: var(--espacio-2);
   align-self: flex-start;
   padding: 7px 12px;
-  border: 1px solid rgba(255, 246, 237, 0.45);
+  border: 1px solid var(--sobre-primario-borde);
   border-radius: var(--radio-boton);
-  color: var(--texto-sobre-burdeos);
+  color: var(--primario-texto);
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .enlace:hover {
-  background: rgba(255, 246, 237, 0.12);
+  background: var(--sobre-primario-velo);
   text-decoration: none;
 }
 

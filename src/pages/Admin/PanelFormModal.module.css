@@ -14,8 +14,8 @@
   gap: var(--espacio-4);
   grid-column: 1 / -1;
   padding: var(--espacio-3);
-  background: var(--pagina-doc);
-  border: 1px solid var(--divisor-fuerte-2);
+  background: var(--papel);
+  border: 1px solid var(--divisor-fuerte);
   border-radius: var(--radio-boton);
   font-size: 11px;
   color: var(--texto-secundario);

@@ -1,12 +1,13 @@
 .fondo {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  /* Por encima del cromo de SharePoint (barra de suite y app bar llegan a ~1000000). */
+  z-index: 1000000;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: var(--espacio-6) var(--espacio-4);
-  background: rgba(26, 20, 22, 0.38);
+  background: var(--velo-modal);
   overflow-y: auto;
 }
 
@@ -30,7 +31,7 @@
   gap: var(--espacio-4);
   margin-bottom: var(--espacio-5);
   padding-bottom: var(--espacio-3);
-  border-bottom: 2px solid var(--burdeos);
+  border-bottom: 2px solid var(--primario);
 }
 
 .titulo {
@@ -51,7 +52,7 @@
   width: 28px;
   height: 28px;
   flex: none;
-  border: 1px solid var(--divisor-fuerte-2);
+  border: 1px solid var(--divisor-fuerte);
   border-radius: var(--radio-boton);
   background: var(--tarjeta);
   color: var(--texto-secundario);
@@ -59,8 +60,8 @@
 }
 
 .cerrar:hover {
-  border-color: var(--burdeos);
-  color: var(--burdeos);
+  border-color: var(--primario);
+  color: var(--primario);
 }
 
 .pie {

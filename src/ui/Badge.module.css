@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  border: 1px solid var(--divisor-fuerte-2);
+  border: 1px solid var(--divisor-fuerte);
   border-radius: var(--radio-chip);
   padding: 2px 7px;
   font-size: 10px;
@@ -14,40 +14,30 @@
   background: var(--tarjeta);
 }
 
+/* "activo" comparte esta regla: el tono es el mismo. */
 .tienes {
   color: var(--positivo);
-  border-color: #cfe4dd;
-  background: #f2f9f6;
+  border-color: var(--positivo-borde);
+  background: var(--positivo-fondo);
 }
 
+/* "destacado" comparte esta regla. */
 .solicitar {
-  color: var(--burdeos);
+  color: var(--primario);
   border-color: var(--borde-total);
   background: var(--fila-total);
 }
 
-.activo {
-  color: var(--positivo);
-  border-color: #cfe4dd;
-  background: #f2f9f6;
-}
-
 .pruebas {
-  color: #8a4b00;
-  border-color: #f0d9c4;
-  background: #fdf2e7;
+  color: var(--aviso-texto);
+  border-color: var(--aviso-borde);
+  background: var(--aviso-fondo);
 }
 
 .retirado {
   color: var(--texto-terciario);
-  border-color: var(--divisor-fuerte-2);
-  background: var(--pagina-doc);
-}
-
-.destacado {
-  color: var(--burdeos);
-  border-color: var(--borde-total);
-  background: var(--fila-total);
+  border-color: var(--divisor-fuerte);
+  background: var(--papel);
 }
 
 .aviso {
@@ -58,13 +48,13 @@
 
 .neutro {
   color: var(--texto-secundario);
-  background: var(--pagina-doc);
-  border-color: var(--divisor-fuerte-2);
+  background: var(--papel);
+  border-color: var(--divisor-fuerte);
 }
 
 .sobreBurdeos {
-  color: var(--texto-sobre-burdeos);
-  border-color: rgba(255, 246, 237, 0.45);
+  color: var(--primario-texto);
+  border-color: var(--sobre-primario-borde);
   background: transparent;
 }
 

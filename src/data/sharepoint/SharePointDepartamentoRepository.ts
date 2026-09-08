@@ -8,7 +8,7 @@ import '@pnp/sp/webs';
 import '@pnp/sp/lists';
 import '@pnp/sp/items';
 
-import { NOMBRE_LISTA_DEPARTAMENTOS } from '../../config/tenant.config';
+import { NOMBRE_LISTA_DEPARTAMENTOS, URL_SITIO_PORTAL } from '../../config/tenant.config';
 import type { GrupoM365 } from '../../domain/acceso';
 import type { AjustesDepartamento, DepartamentoRepository } from '../DepartamentoRepository';
 
@@ -45,8 +45,13 @@ export class SharePointDepartamentoRepository implements DepartamentoRepository 
   private readonly sp: SPFI;
   private readonly lista: string;
 
-  constructor(contextoSpfx: Parameters<typeof SPFx>[0], nombreLista: string = NOMBRE_LISTA_DEPARTAMENTOS) {
-    this.sp = spfi().using(SPFx(contextoSpfx));
+  /** urlSitio: igual que en SharePointPanelRepository, la lista vive en el sitio del portal. */
+  constructor(
+    contextoSpfx: Parameters<typeof SPFx>[0],
+    nombreLista: string = NOMBRE_LISTA_DEPARTAMENTOS,
+    urlSitio: string = URL_SITIO_PORTAL,
+  ) {
+    this.sp = spfi(urlSitio).using(SPFx(contextoSpfx));
     this.lista = nombreLista;
   }
 

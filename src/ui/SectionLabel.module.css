@@ -8,7 +8,7 @@
 }
 
 .sobreBurdeos {
-  color: rgba(255, 246, 237, 0.72);
+  color: var(--sobre-primario-medio);
 }
 
 .conMargen {

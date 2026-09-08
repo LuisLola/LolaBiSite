@@ -3,9 +3,13 @@ import type { GrupoM365 } from '../domain/acceso';
 export interface DepartamentoConfig {
   /** Dos letras. */
   iniciales: string;
-  /** Fondo del cuadrado de área. Solo colores de la paleta. */
+  /**
+   * Fondo del cuadrado de área. Cualquier color CSS válido, pero lo normal es
+   * referenciar un token del tema (`var(--acento)`) para que el área siga a los
+   * colores corporativos cuando cambien. Ver docs/marca.md.
+   */
   color: string;
-  /** Texto sobre ese fondo. El rosa exige texto oscuro. */
+  /** Texto sobre ese fondo. El acento rosa exige texto oscuro. */
   colorTexto: string;
   descripcion?: string;
   responsable?: string;
@@ -35,8 +39,8 @@ export interface DepartamentoConfig {
 export const DEPARTAMENTOS_CONFIG: Record<string, DepartamentoConfig> = {
   'Retail-Online': {
     iniciales: 'RO',
-    color: '#6F263D',
-    colorTexto: '#FFF6ED',
+    color: 'var(--primario)',
+    colorTexto: 'var(--primario-texto)',
     descripcion:
       'Venta en tienda propia y canal online: desempeño diario, ranking por temporada y comparativa entre temporadas.',
     responsable: 'Dirección de Operaciones',
@@ -46,8 +50,8 @@ export const DEPARTAMENTOS_CONFIG: Record<string, DepartamentoConfig> = {
   },
   Multimarca: {
     iniciales: 'MM',
-    color: '#BA1C43',
-    colorTexto: '#FFF6ED',
+    color: 'var(--negativo)',
+    colorTexto: 'var(--primario-texto)',
     descripcion:
       'Canal mayorista y multimarca: servicio de temporada, ranking de producto y plan de servicio B2B.',
     responsable: 'Dirección Comercial',
@@ -56,8 +60,8 @@ export const DEPARTAMENTOS_CONFIG: Record<string, DepartamentoConfig> = {
   },
   Logistica: {
     iniciales: 'LG',
-    color: '#DFA0C9',
-    colorTexto: '#1A1416',
+    color: 'var(--acento)',
+    colorTexto: 'var(--texto)',
     descripcion:
       'Almacén y transporte: análisis de transportes y previsión de entradas y salidas de almacén.',
     responsable: 'Dirección de Logística',
@@ -69,8 +73,8 @@ export const DEPARTAMENTOS_CONFIG: Record<string, DepartamentoConfig> = {
 /** Estilo de reserva para cualquier departamento que aparezca sin configurar. */
 export const DEPARTAMENTO_NEUTRO: DepartamentoConfig = {
   iniciales: '--',
-  color: '#F3ECE4',
-  colorTexto: '#6B5C60',
+  color: 'var(--papel)',
+  colorTexto: 'var(--texto-secundario)',
 };
 
 /** Iniciales de 2 letras a partir del nombre, para departamentos sin config. */

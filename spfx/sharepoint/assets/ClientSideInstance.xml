@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Despliegue tenant-wide del boton "Paneles BI". Al publicar la solucion, esto
+  crea una fila en la lista "Tenant Wide Extensions" del catalogo de aplicaciones,
+  desde donde se puede desactivar sin volver a desplegar.
+
+  ComponentId = id de BotonPortalBiApplicationCustomizer.manifest.json
+-->
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <ClientSideComponentInstance
+    Title="Boton Portal BI"
+    Location="ClientSideExtension.ApplicationCustomizer"
+    ComponentId="65d56318-40c5-429b-a467-78d63e071bb6"
+    Properties="{&quot;urlPortal&quot;:&quot;https://lolacasademunt.sharepoint.com/sites/PortalBI/SitePages/Home.aspx&quot;,&quot;etiqueta&quot;:&quot;Paneles BI&quot;}" />
+</Elements>

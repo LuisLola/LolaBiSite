@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEPARTAMENTOS_CONFIG } from '../config/departamentos.config';
 import { derivarDepartamentos } from './departamentos';
 import {
   agruparPorInforme,
@@ -148,8 +149,17 @@ describe('derivarDepartamentos', () => {
   it('los configurados traen iniciales y color de la config', () => {
     const retail = derivarDepartamentos(paneles).find((d) => d.nombre === 'Retail-Online');
     expect(retail?.iniciales).toBe('RO');
-    expect(retail?.color).toBe('#6F263D');
+    // Ciego al color concreto: lo que se prueba es de donde sale, no cual es.
+    expect(retail?.color).toBe(DEPARTAMENTOS_CONFIG['Retail-Online']!.color);
     expect(retail?.huerfano).toBe(false);
+  });
+
+  it('lo editado en Administración manda sobre la config', () => {
+    const retail = derivarDepartamentos(paneles, [
+      { nombre: 'Retail-Online', color: '#123456' },
+    ]).find((d) => d.nombre === 'Retail-Online');
+    expect(retail?.color).toBe('#123456');
+    expect(retail?.iniciales).toBe('RO');
   });
 });
 

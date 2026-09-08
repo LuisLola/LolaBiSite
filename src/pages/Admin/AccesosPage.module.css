@@ -160,7 +160,7 @@
 
 .sugerencia {
   padding: 4px 8px;
-  border: 1px solid var(--divisor-fuerte-2);
+  border: 1px solid var(--divisor-fuerte);
   border-radius: var(--radio-chip);
   background: var(--tarjeta);
   font-size: 11px;
@@ -170,6 +170,6 @@
 }
 
 .sugerencia:hover {
-  border-color: var(--burdeos);
-  color: var(--burdeos);
+  border-color: var(--primario);
+  color: var(--primario);
 }

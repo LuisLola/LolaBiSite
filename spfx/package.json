@@ -13,6 +13,7 @@
     "serve": "gulp serve"
   },
   "dependencies": {
+    "@microsoft/sp-application-base": "1.20.0",
     "@microsoft/sp-core-library": "1.20.0",
     "@microsoft/sp-loader": "1.20.0",
     "@microsoft/sp-property-pane": "1.20.0",

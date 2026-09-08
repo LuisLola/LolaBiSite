@@ -24,24 +24,24 @@
 
 .enlazable:hover,
 .enlazable:focus-visible {
-  border-color: var(--burdeos);
+  border-color: var(--primario);
   text-decoration: none;
 }
 
 .burdeos {
-  background: var(--burdeos);
-  border-color: var(--burdeos);
-  color: var(--texto-sobre-burdeos);
+  background: var(--primario);
+  border-color: var(--primario);
+  color: var(--primario-texto);
 }
 
 .doc {
-  background: var(--pagina-doc);
-  border-color: var(--divisor-fuerte-2);
+  background: var(--papel);
+  border-color: var(--divisor-fuerte);
 }
 
 .atenuada {
-  background: var(--pagina-doc);
-  border-color: var(--divisor-fuerte-2);
+  background: var(--papel);
+  border-color: var(--divisor-fuerte);
   color: var(--texto-secundario);
 }
 

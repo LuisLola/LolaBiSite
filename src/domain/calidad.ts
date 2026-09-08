@@ -6,10 +6,22 @@ import { DEPARTAMENTOS_CONFIG } from '../config/departamentos.config';
 const AREAS_SOSPECHOSAS = [/integrantes/i, /^\s*luis\b/i, /^\s*$/];
 
 /**
+ * Contexto del departamento del panel. Sin esto, dos avisos salen siempre y no
+ * hay forma de resolverlos, y un panel de calidad permanentemente en rojo es un
+ * panel que nadie lee.
+ */
+export interface OpcionesCalidad {
+  /** Área de trabajo del departamento (lista "Departamentos BI"). */
+  workspaceDelArea?: string;
+  /** Si el departamento existe en la config o en la lista de áreas. */
+  departamentoConocido?: boolean;
+}
+
+/**
  * Avisos de calidad de datos que muestra administración. No bloquean nada:
  * los datos de hoy tienen exactamente estos problemas y hay que verlos.
  */
-export function avisosDePanel(panel: Panel): AvisoCalidad[] {
+export function avisosDePanel(panel: Panel, opciones: OpcionesCalidad = {}): AvisoCalidad[] {
   const avisos: AvisoCalidad[] = [];
 
   if (esUrlEmbed(panel.urlDirecta)) {
@@ -30,21 +42,23 @@ export function avisosDePanel(panel: Panel): AvisoCalidad[] {
     });
   }
 
-  if (faltaAreaDeTrabajo(panel)) {
+  if (faltaAreaDeTrabajo(panel, opciones.workspaceDelArea)) {
     avisos.push({
       tipo: 'falta-area-de-trabajo',
       gravedad: 'baja',
       mensaje:
         'Sin área de trabajo. No afecta al enlace normal (que usa la URL de la lista), ' +
-        'solo a «Abrir en Power BI»: rellena workspaces.config.ts para enlazar directo.',
+        'solo a «Abrir en Power BI»: rellena WorkspaceId del área en Administración → Accesos.',
     });
   }
 
-  if (!DEPARTAMENTOS_CONFIG[panel.departamento]) {
+  const departamentoConocido =
+    opciones.departamentoConocido ?? Boolean(DEPARTAMENTOS_CONFIG[panel.departamento]);
+  if (!departamentoConocido) {
     avisos.push({
       tipo: 'departamento-huerfano',
       gravedad: 'media',
-      mensaje: `El departamento "${panel.departamento || '(vacío)'}" no está en departamentos.config.ts.`,
+      mensaje: `El departamento "${panel.departamento || '(vacío)'}" no está descrito: sale con el estilo neutro.`,
     });
   }
 
@@ -83,19 +97,45 @@ export function avisosDePanel(panel: Panel): AvisoCalidad[] {
   return avisos;
 }
 
-export function avisosDeTodos(paneles: readonly Panel[]): Map<string, AvisoCalidad[]> {
+/**
+ * Contexto de calidad a partir de los departamentos ya derivados: de ahi salen
+ * el área de trabajo y si el departamento está descrito, tanto si viene de la
+ * config como de la lista "Departamentos BI".
+ */
+export function contextoDeCalidad(
+  departamentos: readonly Departamento[] = [],
+): (panel: Panel) => OpcionesCalidad {
+  const porNombre = new Map(departamentos.map((departamento) => [departamento.nombre, departamento]));
+  return (panel) => {
+    const departamento = porNombre.get(panel.departamento);
+    if (!departamento) return {};
+    const opciones: OpcionesCalidad = { departamentoConocido: !departamento.huerfano };
+    if (departamento.workspaceId) opciones.workspaceDelArea = departamento.workspaceId;
+    return opciones;
+  };
+}
+
+export function avisosDeTodos(
+  paneles: readonly Panel[],
+  departamentos?: readonly Departamento[],
+): Map<string, AvisoCalidad[]> {
+  const contexto = contextoDeCalidad(departamentos);
   const mapa = new Map<string, AvisoCalidad[]>();
   for (const panel of paneles) {
-    const avisos = avisosDePanel(panel);
+    const avisos = avisosDePanel(panel, contexto(panel));
     if (avisos.length > 0) mapa.set(panel.id, avisos);
   }
   return mapa;
 }
 
-export function resumenAvisos(paneles: readonly Panel[]): Array<{ tipo: string; total: number; mensaje: string; gravedad: string }> {
+export function resumenAvisos(
+  paneles: readonly Panel[],
+  departamentos?: readonly Departamento[],
+): Array<{ tipo: string; total: number; mensaje: string; gravedad: string }> {
+  const contexto = contextoDeCalidad(departamentos);
   const conteo = new Map<string, { total: number; mensaje: string; gravedad: string }>();
   for (const panel of paneles) {
-    for (const aviso of avisosDePanel(panel)) {
+    for (const aviso of avisosDePanel(panel, contexto(panel))) {
       const previo = conteo.get(aviso.tipo);
       if (previo) previo.total += 1;
       else conteo.set(aviso.tipo, { total: 1, mensaje: aviso.mensaje, gravedad: aviso.gravedad });

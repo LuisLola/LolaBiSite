@@ -1,12 +1,13 @@
 .fondo {
   position: fixed;
   inset: 0;
-  z-index: 1100;
+  /* Por encima del cromo de SharePoint y del resto de modales del portal. */
+  z-index: 1000001;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 10vh var(--espacio-4) var(--espacio-4);
-  background: rgba(26, 20, 22, 0.38);
+  background: var(--velo-modal);
 }
 
 .panel {
@@ -94,7 +95,7 @@
   gap: var(--espacio-4);
   padding: var(--espacio-3) var(--espacio-4);
   border-top: 1px solid var(--divisor);
-  background: var(--pagina-doc);
+  background: var(--papel);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;

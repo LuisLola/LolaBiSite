@@ -25,24 +25,24 @@
 }
 
 .primario {
-  background: var(--burdeos);
-  color: var(--texto-sobre-burdeos);
-  border-color: var(--burdeos);
+  background: var(--primario);
+  color: var(--primario-texto);
+  border-color: var(--primario);
 }
 
 .primario:hover:not(:disabled) {
-  background: #5c1f33;
-  border-color: #5c1f33;
+  background: var(--primario-hover);
+  border-color: var(--primario-hover);
 }
 
 .secundario {
   background: var(--tarjeta);
-  color: var(--burdeos);
+  color: var(--primario);
   border-color: var(--borde-total);
 }
 
 .secundario:hover:not(:disabled) {
-  border-color: var(--burdeos);
+  border-color: var(--primario);
 }
 
 .fantasma {
@@ -52,7 +52,7 @@
 }
 
 .fantasma:hover:not(:disabled) {
-  color: var(--burdeos);
+  color: var(--primario);
   background: var(--fila-total);
 }
 

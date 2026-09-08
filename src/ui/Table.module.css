@@ -16,10 +16,10 @@
   font-weight: 800;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: var(--burdeos);
+  color: var(--primario);
   text-align: left;
   white-space: nowrap;
-  border-bottom: 2px solid var(--burdeos);
+  border-bottom: 2px solid var(--primario);
   background: transparent;
 }
 

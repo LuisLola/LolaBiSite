@@ -9,10 +9,19 @@
           "manifest": "./src/webparts/portalBi/PortalBiWebPart.manifest.json"
         }
       ]
+    },
+    "boton-portal-bi": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/botonPortalBi/BotonPortalBiApplicationCustomizer.js",
+          "manifest": "./src/extensions/botonPortalBi/BotonPortalBiApplicationCustomizer.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "PortalBiWebPartStrings": "lib/webparts/portalBi/loc/{locale}.js"
+    "PortalBiWebPartStrings": "lib/webparts/portalBi/loc/{locale}.js",
+    "BotonPortalBiStrings": "lib/extensions/botonPortalBi/loc/{locale}.js"
   }
 }

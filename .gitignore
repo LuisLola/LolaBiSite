@@ -10,3 +10,5 @@ spfx/dist/
 spfx/lib/
 spfx/release/
 spfx/sharepoint/solution/
+# Grafo de conocimiento generado (graphify)
+graphify-out/

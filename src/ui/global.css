@@ -1,10 +1,13 @@
+/*
+ * Reset y tipografia del portal.
+ *
+ * TODO va scopeado bajo .portalBiRaiz (o .portalBiTokens para los overlays que
+ * se montan en document.body). Dentro de SPFx, style-loader inyecta este
+ * fichero en el head de la pagina anfitriona: un selector de elemento suelto
+ * (body, a, ul, h1) repintaria la pagina de SharePoint entera y le quitaria las
+ * vinetas a su navegacion.
+ */
 @import './tokens.css';
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
 
 html,
 body,
@@ -14,6 +17,25 @@ body,
 
 body {
   margin: 0;
+}
+
+.portalBiRaiz,
+.portalBiTokens {
+  box-sizing: border-box;
+}
+
+.portalBiRaiz *,
+.portalBiRaiz *::before,
+.portalBiRaiz *::after,
+.portalBiTokens *,
+.portalBiTokens *::before,
+.portalBiTokens *::after {
+  box-sizing: border-box;
+}
+
+/* Raiz del portal: aqui vive el aspecto de pagina que antes estaba en body. */
+.portalBiRaiz {
+  min-height: 100%;
   background: var(--lienzo);
   color: var(--texto);
   font-family: var(--fuente);
@@ -24,54 +46,72 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Dentro de SPFx el contenedor del web part hereda estilos de la pagina. */
-.portalBiRaiz {
-  font-family: var(--fuente);
+/* Los overlays se montan en document.body: heredan tipografia, no fondo. */
+.portalBiTokens {
   color: var(--texto);
-  background: var(--lienzo);
+  font-family: var(--fuente);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-blockquote {
+.portalBiRaiz h1,
+.portalBiRaiz h2,
+.portalBiRaiz h3,
+.portalBiRaiz h4,
+.portalBiRaiz p,
+.portalBiRaiz figure,
+.portalBiRaiz blockquote,
+.portalBiTokens h1,
+.portalBiTokens h2,
+.portalBiTokens h3,
+.portalBiTokens h4,
+.portalBiTokens p,
+.portalBiTokens figure,
+.portalBiTokens blockquote {
   margin: 0;
 }
 
-h1,
-h2,
-h3,
-h4 {
+.portalBiRaiz h1,
+.portalBiRaiz h2,
+.portalBiRaiz h3,
+.portalBiRaiz h4,
+.portalBiTokens h1,
+.portalBiTokens h2,
+.portalBiTokens h3,
+.portalBiTokens h4 {
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.2;
 }
 
-a {
-  color: var(--burdeos);
+.portalBiRaiz a,
+.portalBiTokens a {
+  color: var(--primario);
   text-decoration: none;
 }
 
-a:hover {
+.portalBiRaiz a:hover,
+.portalBiTokens a:hover {
   text-decoration: underline;
 }
 
-button {
+.portalBiRaiz button,
+.portalBiTokens button {
   font-family: inherit;
 }
 
-ul,
-ol {
+.portalBiRaiz ul,
+.portalBiRaiz ol,
+.portalBiTokens ul,
+.portalBiTokens ol {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-:focus-visible {
-  outline: 2px solid var(--burdeos);
+.portalBiRaiz :focus-visible,
+.portalBiTokens :focus-visible {
+  outline: 2px solid var(--primario);
   outline-offset: 2px;
 }
 

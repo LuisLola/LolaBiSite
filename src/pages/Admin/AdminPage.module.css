@@ -112,7 +112,7 @@
 }
 
 .enlaceIcono:hover {
-  color: var(--burdeos);
+  color: var(--primario);
   background: var(--fila-total);
 }
 

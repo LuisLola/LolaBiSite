@@ -4,6 +4,13 @@ declare interface IPortalBiWebPartStrings {
   EtiquetaTitulo: string;
   EtiquetaLista: string;
   EtiquetaListaAreas: string;
+  EtiquetaUrlSitio: string;
+  AyudaUrlSitio: string;
+  EtiquetaModo: string;
+  AyudaModo: string;
+  ModoInline: string;
+  ModoBoton: string;
+  EtiquetaTextoBoton: string;
   EtiquetaGrupoAdmin: string;
   AyudaGrupoAdmin: string;
   EtiquetaDepartamento: string;

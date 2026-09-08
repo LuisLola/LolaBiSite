@@ -8,47 +8,27 @@ import '@pnp/sp/webs';
 import '@pnp/sp/lists';
 import '@pnp/sp/items';
 
-import { NOMBRE_LISTA } from '../../config/tenant.config';
+import { NOMBRE_LISTA, URL_SITIO_PORTAL } from '../../config/tenant.config';
 import { derivarDepartamentos } from '../../domain/departamentos';
 import { ordenarPaneles, siguienteOrden } from '../../domain/paneles';
 import type { Departamento, Panel, PanelInput } from '../../domain/types';
 import type { PanelRepository } from '../PanelRepository';
+import { COLUMNAS, type CampoPanel } from '../excel/columnas';
 import { completarPanel } from '../excel/mapeo';
 
-/** Nombres internos de las columnas de la lista. */
-const CAMPOS = {
-  id: 'Id',
-  nombre: 'Title',
-  areaTrabajo: 'Area_x0020_de_x0020_Trabajo',
-  urlPanel: 'Url_x0020_Panel',
-  urlDirecta: 'UrlDirecta',
-  departamento: 'Departamento',
-  descripcion: 'Descripcion',
-  responsable: 'Responsable',
-  grupoAcceso: 'GrupoAcceso',
-  destacado: 'Destacado',
-  orden: 'Orden',
-  estado: 'Estado',
-  horaActualizacion: 'HoraActualizacion',
-} as const;
+/**
+ * Nombres internos de las columnas, derivados de COLUMNAS: una sola fuente de
+ * verdad, la misma que replica scripts/pnp/PortalBI.Comun.ps1.
+ */
+const CAMPOS = COLUMNAS.reduce(
+  (acumulado, columna) => {
+    acumulado[columna.campo] = columna.interno;
+    return acumulado;
+  },
+  { id: 'Id' } as { id: string } & Record<CampoPanel, string>,
+);
 
-const SELECT = [
-  CAMPOS.id,
-  CAMPOS.nombre,
-  CAMPOS.areaTrabajo,
-  CAMPOS.urlPanel,
-  CAMPOS.urlDirecta,
-  CAMPOS.departamento,
-  CAMPOS.descripcion,
-  CAMPOS.responsable,
-  CAMPOS.grupoAcceso,
-  CAMPOS.destacado,
-  CAMPOS.orden,
-  CAMPOS.estado,
-  CAMPOS.horaActualizacion,
-  'Created',
-  'Modified',
-].join(',');
+const SELECT = [...Object.values(CAMPOS), 'Created', 'Modified'].join(',');
 
 interface ElementoLista {
   Id: number;
@@ -87,8 +67,17 @@ export class SharePointPanelRepository implements PanelRepository {
   private readonly sp: SPFI;
   private readonly lista: string;
 
-  constructor(contextoSpfx: Parameters<typeof SPFx>[0], nombreLista: string = NOMBRE_LISTA) {
-    this.sp = spfi().using(SPFx(contextoSpfx));
+  /**
+   * urlSitio es obligatorio de facto: spfi() sin argumento resuelve al web
+   * actual, asi que el web part fuera del sitio del portal (o una pestana de
+   * Teams) buscaria la lista en el sitio equivocado y daria 404.
+   */
+  constructor(
+    contextoSpfx: Parameters<typeof SPFx>[0],
+    nombreLista: string = NOMBRE_LISTA,
+    urlSitio: string = URL_SITIO_PORTAL,
+  ) {
+    this.sp = spfi(urlSitio).using(SPFx(contextoSpfx));
     this.lista = nombreLista;
   }
 

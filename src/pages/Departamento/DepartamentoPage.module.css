@@ -19,7 +19,7 @@
 }
 
 .migas a:hover {
-  color: var(--burdeos);
+  color: var(--primario);
 }
 
 .cabecera {
@@ -84,7 +84,7 @@
 }
 
 .nombrePanel:hover {
-  color: var(--burdeos);
+  color: var(--primario);
   text-decoration: underline;
 }
 
@@ -110,7 +110,7 @@
   font-weight: 800;
   letter-spacing: 1.4px;
   text-transform: uppercase;
-  color: var(--burdeos);
+  color: var(--primario);
 }
 
 .grupoInformeConteo {
@@ -150,7 +150,7 @@
 }
 
 .vinieta {
-  color: var(--burdeos);
+  color: var(--primario);
   font-weight: 800;
   flex: none;
 }

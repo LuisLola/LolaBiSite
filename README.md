@@ -1,16 +1,21 @@
 # Portal BI · Lola Casademunt
 
 Portal de administración y consulta de los paneles de Power BI de la casa,
-organizado por departamento. Los datos salen hoy de un Excel local y mañana de
-la lista de SharePoint `Paneles PowerBi LolaCasademunt`, sin tocar un solo
-componente.
+organizado por departamento. En local los datos salen de un Excel; en la
+intranet, de la lista `Paneles PowerBi LolaCasademunt` del sitio
+`/sites/PortalBI`, sin tocar un solo componente.
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173 · sin credenciales, sin red
-npm run build    # tsc -b && vite build
-npm test         # 38 pruebas de dominio
+npm run dev        # http://localhost:5173 · sin credenciales, sin red
+npm run build      # tsc -b && vite build
+npm test           # pruebas de dominio y del sistema de tema
+npm run typecheck
 ```
+
+Para el sitio, las listas y el despliegue: **[docs/despliegue.md](docs/despliegue.md)**
+y los scripts de **[scripts/pnp/](scripts/pnp/)**. Para los colores
+corporativos: **[docs/marca.md](docs/marca.md)**.
 
 ## Cómo está montado
 
@@ -24,9 +29,11 @@ npm test         # 38 pruebas de dominio
   /hooks        estado de servidor, acceso por equipo y «mis paneles»
   /layout       barra superior y armazón de página
   /pages        Portada · Departamento · Panel · Administración · Accesos · Buscador
+  /tema         tokens editables, saneado y aplicación del tema
   /ui           primitivos y tokens del sistema visual
-/spfx           web part de SPFx que monta <PortalBI /> con datos de SharePoint
-/docs           despliegue.md
+/spfx           web part de SPFx + botón global, montan <PortalBI /> con datos de SharePoint
+/scripts/pnp    aprovisionamiento del sitio, las listas, el despliegue y la marca
+/docs           despliegue.md · marca.md
 ```
 
 ### Las dos fases, una sola interfaz
@@ -77,7 +84,8 @@ Dos cosas que el portal asume porque los datos son así:
   lo marca como dato a limpiar.
 - **No se conoce el `workspaceId`.** No afecta al enlace normal, que usa la URL
   de la lista; solo al secundario «Abrir en Power BI», que mientras tanto pasa
-  por el resolutor. Se arregla rellenando `src/config/workspaces.config.ts`.
+  por el resolutor. Se arregla rellenando el `WorkspaceId` de cada área en
+  Administración → Accesos (un departamento, un área de trabajo).
 
 ## Qué abre cada enlace
 
@@ -171,21 +179,28 @@ se hace en Teams. Si se quisiera hacer desde aquí haría falta el permiso
 
 ## Sistema visual
 
-Montserrat en todo, lienzo crema `#FFF6ED`, tarjetas blancas con borde
-`#E7DACE` y radio 8 sin sombra, burdeos `#6F263D` como único color de bloque
-grande, cabeceras de tabla en burdeos de 9px con borde inferior de 2px y cifras
-tabulares. Los tokens viven en `src/ui/tokens.css` y los primitivos
+Montserrat en todo, lienzo crema, tarjetas blancas con borde suave y radio 8 sin
+sombra, un único color de marca para los bloques grandes, cabeceras de tabla en
+ese color a 9px con borde inferior de 2px y cifras tabulares. Los primitivos
 (`Card`, `Badge`, `Button`, `Table`, `SectionLabel`, `AreaAvatar`, campos y
-`Modal`) en `src/ui/`. Sin Tailwind, sin librerías de componentes con estilo
-propio, sin degradados y sin azul de SharePoint.
+`Modal`) están en `src/ui/`. Sin Tailwind, sin librerías de componentes con
+estilo propio, sin degradados y sin azul de SharePoint.
+
+Ningún componente escribe un color a mano: todos salen de los tokens de
+`src/ui/tokens.css`, y hay un test que falla si alguien mete un hex en un CSS de
+módulo. Los colores corporativos se cambian **sin recompilar**, desde una lista
+de SharePoint; el hover, los velos y los tintes de los chips se derivan del color
+de marca con `color-mix()`, así que siguen al cambio solos. Cómo se toca eso está
+en **[docs/marca.md](docs/marca.md)**.
 
 ## Añadir cosas sin tocar código
 
 - **Un panel**: `#/admin` → «Nuevo panel».
 - **Un departamento**: aparece solo en cuanto un panel lo use. Cae en un estilo
-  neutro hasta que se le den iniciales y color en
-  `src/config/departamentos.config.ts`.
+  neutro hasta que se le den iniciales y color, en `#/admin/accesos` o, como
+  valor de arranque, en `src/config/departamentos.config.ts`.
 - **Su equipo y su área de trabajo**: `#/admin/accesos`.
+- **Los colores corporativos**: la lista `Marca LC`. Ver [docs/marca.md](docs/marca.md).
 
 ## Pendiente
 

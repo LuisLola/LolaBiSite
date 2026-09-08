@@ -1,9 +1,14 @@
 /**
  * Mapa reportId -> workspaceId (el "groups/{id}" de app.powerbi.com).
  *
- * El export de SharePoint NO trae el area de trabajo real de Power BI, asi que
- * esto se rellena a mano. Mientras un reportId no este aqui, la URL de apertura
- * cae al formato sin grupo y administracion muestra el aviso "falta area de trabajo".
+ * EXCEPCION, no la via normal. Lo habitual es "un departamento, un area de
+ * trabajo": el area se guarda en la columna WorkspaceId de la lista
+ * "Departamentos BI" y se edita en Administracion -> Accesos. Este mapa existe
+ * solo para el informe que viva fuera del area de su departamento, y por eso
+ * esta vacio a proposito.
+ *
+ * Prioridad en urlDirectaEfectiva: UrlDirecta manual > este mapa > area del
+ * departamento.
  *
  * Para rellenarlo: abre el informe en Power BI y copia el GUID que aparece tras
  * /groups/ en la barra de direcciones.

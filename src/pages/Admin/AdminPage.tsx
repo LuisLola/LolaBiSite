@@ -18,7 +18,7 @@ import { useConfiguracion } from '../../app/configuracion';
 import { useRepositorio } from '../../data/ServiciosProvider';
 import { descargarExcel, filasDeFichero } from '../../data/excel/libroExcel';
 import { filasAPaneles } from '../../data/excel/mapeo';
-import { avisosDePanel, resumenAvisos } from '../../domain/calidad';
+import { avisosDePanel, contextoDeCalidad, resumenAvisos } from '../../domain/calidad';
 import { filtrarPorTexto } from '../../domain/paneles';
 import { urlDirectaEfectiva } from '../../domain/panelUrls';
 import { ESTADOS, type EstadoPanel, type Panel, type PanelInput } from '../../domain/types';
@@ -63,7 +63,10 @@ export function AdminPage() {
     return filtrarPorTexto(lista, consulta);
   }, [paneles, filtroDepartamento, filtroEstado, consulta]);
 
-  const avisos = useMemo(() => resumenAvisos(paneles), [paneles]);
+  // Los avisos necesitan el area de trabajo y si el departamento esta descrito:
+  // sin esto, "falta area de trabajo" y "departamento huerfano" saldrian siempre.
+  const contextoCalidad = useMemo(() => contextoDeCalidad(departamentos), [departamentos]);
+  const avisos = useMemo(() => resumenAvisos(paneles, departamentos), [paneles, departamentos]);
   const nombresDepartamento = useMemo(() => departamentos.map((d) => d.nombre), [departamentos]);
 
   const editarCampo = (panel: Panel, campo: CampoInline, valor: string) => {
@@ -261,7 +264,7 @@ export function AdminPage() {
               <FilaVacia colSpan={COLUMNAS}>Ningún panel coincide con los filtros.</FilaVacia>
             ) : (
               filtrados.map((panel) => {
-                const avisosPanel = avisosDePanel(panel);
+                const avisosPanel = avisosDePanel(panel, contextoCalidad(panel));
                 return (
                   <tr key={panel.id} className={cx(estilos.fila, panel.estado === 'Retirado' && estilos.filaRetirada)}>
                     <Td estrecha>
@@ -415,7 +418,7 @@ export function AdminPage() {
                           <Monitor size={13} strokeWidth={1.75} />
                         </Link>
                         <a
-                          href={urlDirectaEfectiva(panel)}
+                          href={urlDirectaEfectiva(panel, contextoCalidad(panel).workspaceDelArea)}
                           target="_blank"
                           rel="noreferrer"
                           className={estilos.enlaceIcono}

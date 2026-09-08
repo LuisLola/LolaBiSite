@@ -11,8 +11,8 @@
   gap: var(--espacio-6);
   align-items: end;
   padding: var(--espacio-6);
-  background: var(--burdeos);
-  color: var(--texto-sobre-burdeos);
+  background: var(--primario);
+  color: var(--primario-texto);
   border-radius: var(--radio-tarjeta);
 }
 
@@ -21,7 +21,7 @@
   font-weight: 800;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(255, 246, 237, 0.72);
+  color: var(--sobre-primario-medio);
 }
 
 .heroeTitulo {
@@ -37,7 +37,7 @@
   max-width: 52ch;
   font-size: 13px;
   font-weight: 400;
-  color: rgba(255, 246, 237, 0.85);
+  color: var(--sobre-primario-fuerte);
 }
 
 .heroeCifras {
@@ -64,7 +64,7 @@
   font-weight: 800;
   letter-spacing: 1.6px;
   text-transform: uppercase;
-  color: rgba(255, 246, 237, 0.72);
+  color: var(--sobre-primario-medio);
 }
 
 .heroeBuscador {
@@ -78,7 +78,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 246, 237, 0.64);
+  color: var(--sobre-primario-suave);
 }
 
 /* Franja de estado de los datos. */
@@ -111,7 +111,7 @@
 }
 
 .estadoItem:hover {
-  color: var(--burdeos);
+  color: var(--primario);
   text-decoration: none;
 }
 

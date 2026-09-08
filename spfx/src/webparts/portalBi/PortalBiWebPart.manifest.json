@@ -19,8 +19,11 @@
       "officeFabricIconFontName": "BIDashboard",
       "properties": {
         "titulo": "Portal BI",
+        "modo": "inline",
+        "textoBoton": "Paneles BI",
         "nombreLista": "Paneles PowerBi LolaCasademunt",
         "nombreListaDepartamentos": "Departamentos BI",
+        "urlSitio": "https://lolacasademunt.sharepoint.com/sites/PortalBI",
         "grupoAdministradores": "BI-Administradores",
         "departamentoPorDefecto": "",
         "mostrarAdministracion": true

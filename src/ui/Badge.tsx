@@ -13,14 +13,15 @@ export type TonoBadge =
   | 'aviso'
   | 'sobreBurdeos';
 
+// activo comparte regla con tienes y destacado con solicitar: mismo tono.
 const CLASE_TONO: Record<TonoBadge, string | undefined> = {
   neutro: estilos.neutro,
   tienes: estilos.tienes,
   solicitar: estilos.solicitar,
-  activo: estilos.activo,
+  activo: estilos.tienes,
   pruebas: estilos.pruebas,
   retirado: estilos.retirado,
-  destacado: estilos.destacado,
+  destacado: estilos.solicitar,
   aviso: estilos.aviso,
   sobreBurdeos: estilos.sobreBurdeos,
 };

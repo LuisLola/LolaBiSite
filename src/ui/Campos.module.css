@@ -19,7 +19,7 @@
   font-weight: 500;
   color: var(--texto);
   background: var(--tarjeta);
-  border: 1px solid var(--divisor-fuerte-2);
+  border: 1px solid var(--divisor-fuerte);
   border-radius: var(--radio-boton);
   padding: 7px 10px;
 }
@@ -30,7 +30,7 @@
 
 .control:focus {
   outline: none;
-  border-color: var(--burdeos);
+  border-color: var(--primario);
 }
 
 .control::placeholder {
@@ -38,7 +38,7 @@
 }
 
 .control:disabled {
-  background: var(--pagina-doc);
+  background: var(--papel);
   color: var(--texto-secundario);
 }
 
@@ -99,7 +99,7 @@
 .casilla input {
   width: 15px;
   height: 15px;
-  accent-color: var(--burdeos);
+  accent-color: var(--primario);
 }
 
 .enLinea {
@@ -117,6 +117,6 @@
 
 .controlEnLinea:hover,
 .controlEnLinea:focus {
-  border-color: var(--burdeos);
+  border-color: var(--primario);
   background: var(--tarjeta);
 }
