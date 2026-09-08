@@ -6,10 +6,38 @@
  * (MSGraphClientFactory): sin MSAL, sin tokens a mano. Requiere aprobar en el
  * catalogo de aplicaciones los permisos declarados en package-solution.json.
  */
-import type { WebPartContext } from '@microsoft/sp-webpart-base';
 import { GRUPO_ADMINISTRADORES } from '../../config/tenant.config';
 import { esElMismoGrupo, type GrupoM365, type MiembroGrupo, type UsuarioActual } from '../../domain/acceso';
 import type { ProveedorIdentidad } from '../identidad/ProveedorIdentidad';
+
+/**
+ * Lo unico que hace falta del contexto de SPFx, tipado por su forma.
+ *
+ * No se importa WebPartContext de @microsoft/sp-webpart-base a proposito: ese
+ * paquete solo existe en spfx/node_modules y no se resuelve desde /src, asi que
+ * el import rompia la compilacion. De paso, esto vale igual para el contexto de
+ * un web part y para el de una extension.
+ */
+export interface ContextoSpfxIdentidad {
+  msGraphClientFactory: {
+    getClient(version: string): Promise<PeticionGraphFactory>;
+  };
+  pageContext: {
+    user: { loginName: string; displayName: string; email: string };
+  };
+}
+
+interface PeticionGraphFactory {
+  api(ruta: string): PeticionGraph;
+}
+
+interface PeticionGraph {
+  version(v: string): PeticionGraph;
+  select(campos: string): PeticionGraph;
+  filter(consulta: string): PeticionGraph;
+  top(n: number): PeticionGraph;
+  get<T>(): Promise<T>;
+}
 
 interface GrupoGraph {
   id: string;
@@ -53,11 +81,11 @@ function aMiembro(usuario: UsuarioGraph, rol: MiembroGrupo['rol']): MiembroGrupo
 export class IdentidadSharePoint implements ProveedorIdentidad {
   readonly nombre = 'Microsoft 365';
 
-  private readonly contexto: WebPartContext;
+  private readonly contexto: ContextoSpfxIdentidad;
   private readonly grupoAdministradores: string;
   private cache: Promise<UsuarioActual> | null = null;
 
-  constructor(contexto: WebPartContext, grupoAdministradores: string = GRUPO_ADMINISTRADORES) {
+  constructor(contexto: ContextoSpfxIdentidad, grupoAdministradores: string = GRUPO_ADMINISTRADORES) {
     this.contexto = contexto;
     this.grupoAdministradores = grupoAdministradores;
   }
@@ -74,15 +102,15 @@ export class IdentidadSharePoint implements ProveedorIdentidad {
     if (texto) {
       peticion = peticion.filter(`startswith(displayName,'${texto}') or startswith(mail,'${texto}')`);
     }
-    const respuesta: { value: GrupoGraph[] } = await peticion.get();
+    const respuesta = await peticion.get<{ value: GrupoGraph[] }>();
     return (respuesta.value ?? []).map(aGrupo);
   }
 
   async getMiembros(grupoId: string): Promise<MiembroGrupo[]> {
     const cliente = await this.contexto.msGraphClientFactory.getClient('3');
-    const [propietarios, miembros]: Array<{ value: UsuarioGraph[] }> = await Promise.all([
-      cliente.api(`/groups/${grupoId}/owners`).version('v1.0').top(100).get(),
-      cliente.api(`/groups/${grupoId}/members`).version('v1.0').top(999).get(),
+    const [propietarios, miembros] = await Promise.all([
+      cliente.api(`/groups/${grupoId}/owners`).version('v1.0').top(100).get<{ value: UsuarioGraph[] }>(),
+      cliente.api(`/groups/${grupoId}/members`).version('v1.0').top(999).get<{ value: UsuarioGraph[] }>(),
     ]);
 
     const porId = new Map<string, MiembroGrupo>();
@@ -97,12 +125,12 @@ export class IdentidadSharePoint implements ProveedorIdentidad {
 
     try {
       const cliente = await this.contexto.msGraphClientFactory.getClient('3');
-      const respuesta: { value: GrupoGraph[] } = await cliente
+      const respuesta = await cliente
         .api('/me/memberOf/microsoft.graph.group')
         .version('v1.0')
         .select(CAMPOS_GRUPO)
         .top(999)
-        .get();
+        .get<{ value: GrupoGraph[] }>();
       grupos = (respuesta.value ?? []).map(aGrupo);
     } catch (error) {
       // Sin permiso de Graph aprobado no hay grupos: mejor no enseñar nada que

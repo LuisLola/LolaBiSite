@@ -178,6 +178,15 @@ a Teams; no está hecho.
 
 ## 6. Probar sin empaquetar
 
+Comprobar tipos del lado SPFx **sin Node 18** (útil antes de cambiar de versión
+de Node solo para ver si compila):
+
+```bash
+npx tsc -p spfx/tsconfig.check.json
+```
+
+El build de verdad sí necesita Node 18:
+
 ```bash
 cd spfx
 gulp serve --nobrowser

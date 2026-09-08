@@ -1,0 +1,24 @@
+// Typecheck del lado SPFx sin Node 18: npx tsc -p spfx/tsconfig.check.json
+//
+// El build de verdad es gulp y exige Node 18.17.x. Esto solo comprueba tipos, y
+// se puede correr con cualquier Node. Dos ajustes respecto a tsconfig.json:
+//
+//  - rootDir: ".." porque el proyecto compila tambien /src, que esta fuera.
+//  - paths de react/react-dom: si estan instaladas las dependencias de la raiz
+//    (@types/react 18) y las de /spfx (@types/react 17), TypeScript ve dos
+//    copias de los tipos y saca cientos de errores falsos de ReactNode. Esto
+//    fija la version 17, que es la que usa SPFx.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {
+      "react": ["node_modules/@types/react"],
+      "react/*": ["node_modules/@types/react/*"],
+      "react-dom": ["node_modules/@types/react-dom"],
+      "react-dom/*": ["node_modules/@types/react-dom/*"]
+    }
+  }
+}
