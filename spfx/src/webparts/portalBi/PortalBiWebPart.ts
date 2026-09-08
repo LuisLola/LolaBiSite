@@ -18,7 +18,6 @@ import { IdentidadSharePoint } from '../../compartido/data/sharepoint/IdentidadS
 import { MarcaRepository } from '../../compartido/data/sharepoint/MarcaRepository';
 import { SharePointDepartamentoRepository } from '../../compartido/data/sharepoint/SharePointDepartamentoRepository';
 import { SharePointPanelRepository } from '../../compartido/data/sharepoint/SharePointPanelRepository';
-import type { Tema } from '../../compartido/tema/tema';
 import { PortalEnModal } from '../../compartido/ui/PortalEnModal';
 
 export interface IPortalBiWebPartProps {
@@ -46,7 +45,7 @@ const FUENTE_MONTSERRAT =
 export default class PortalBiWebPart extends BaseClientSideWebPart<IPortalBiWebPartProps> {
   private servicios?: ServiciosPortal;
   private claveServicios = '';
-  private cargarMarca?: () => Promise<Partial<Tema>>;
+  private marca?: MarcaRepository;
 
   protected onInit(): Promise<void> {
     // Montserrat: si el tenant bloquea Google Fonts, sustituye esta carga por
@@ -97,16 +96,13 @@ export default class PortalBiWebPart extends BaseClientSideWebPart<IPortalBiWebP
       return;
     }
 
-    // Estable entre renders: si cambiara de identidad, useTema releeria la
-    // lista de marca en cada cambio del panel de propiedades.
-    if (!this.cargarMarca) {
-      const marca = new MarcaRepository(this.context);
-      this.cargarMarca = () => marca.getMarca();
-    }
+    // Estable entre renders: si cambiara de identidad, el proveedor de tema
+    // releeria la lista de marca en cada cambio del panel de propiedades.
+    if (!this.marca) this.marca = new MarcaRepository(this.context);
 
     const elemento = React.createElement(PortalBI, {
       servicios: this.obtenerServicios(),
-      cargarMarca: this.cargarMarca,
+      marca: this.marca,
       titulo: this.properties.titulo || 'Portal BI',
       departamentoPorDefecto: this.properties.departamentoPorDefecto || undefined,
       mostrarAdministracion: this.properties.mostrarAdministracion !== false,

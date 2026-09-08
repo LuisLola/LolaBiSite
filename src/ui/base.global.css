@@ -7,6 +7,12 @@
  * (body, a, ul, h1) repintaria la pagina de SharePoint entera y le quitaria las
  * vinetas a su navegacion.
  *
+ * El scope va con :where() A PROPOSITO. :where() no suma especificidad, asi que
+ * `:where(.portalBiRaiz) a` pesa lo mismo que `a` y cualquier clase de un CSS
+ * Module le gana, igual que antes de scopear. Con `.portalBiRaiz a` (0,1,1) el
+ * enlace de la tarjeta destacada salia burdeos sobre burdeos: la regla global
+ * pisaba el color que pone su clase.
+ *
  * Los tokens NO se traen con @import: la cadena de SPFx compila estos ficheros
  * con sass, y sass deja los @import de .css como imports nativos que el bundle
  * no resuelve. Se importan los dos por separado desde PortalBI.tsx.
@@ -29,12 +35,9 @@ body {
   box-sizing: border-box;
 }
 
-.portalBiRaiz *,
-.portalBiRaiz *::before,
-.portalBiRaiz *::after,
-.portalBiTokens *,
-.portalBiTokens *::before,
-.portalBiTokens *::after {
+:where(.portalBiRaiz, .portalBiTokens) *,
+:where(.portalBiRaiz, .portalBiTokens) *::before,
+:where(.portalBiRaiz, .portalBiTokens) *::after {
   box-sizing: border-box;
 }
 
@@ -59,63 +62,36 @@ body {
   line-height: 1.5;
 }
 
-.portalBiRaiz h1,
-.portalBiRaiz h2,
-.portalBiRaiz h3,
-.portalBiRaiz h4,
-.portalBiRaiz p,
-.portalBiRaiz figure,
-.portalBiRaiz blockquote,
-.portalBiTokens h1,
-.portalBiTokens h2,
-.portalBiTokens h3,
-.portalBiTokens h4,
-.portalBiTokens p,
-.portalBiTokens figure,
-.portalBiTokens blockquote {
+:where(.portalBiRaiz, .portalBiTokens) :is(h1, h2, h3, h4, p, figure, blockquote) {
   margin: 0;
 }
 
-.portalBiRaiz h1,
-.portalBiRaiz h2,
-.portalBiRaiz h3,
-.portalBiRaiz h4,
-.portalBiTokens h1,
-.portalBiTokens h2,
-.portalBiTokens h3,
-.portalBiTokens h4 {
+:where(.portalBiRaiz, .portalBiTokens) :is(h1, h2, h3, h4) {
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.2;
 }
 
-.portalBiRaiz a,
-.portalBiTokens a {
+:where(.portalBiRaiz, .portalBiTokens) a {
   color: var(--primario);
   text-decoration: none;
 }
 
-.portalBiRaiz a:hover,
-.portalBiTokens a:hover {
+:where(.portalBiRaiz, .portalBiTokens) a:hover {
   text-decoration: underline;
 }
 
-.portalBiRaiz button,
-.portalBiTokens button {
+:where(.portalBiRaiz, .portalBiTokens) button {
   font-family: inherit;
 }
 
-.portalBiRaiz ul,
-.portalBiRaiz ol,
-.portalBiTokens ul,
-.portalBiTokens ol {
+:where(.portalBiRaiz, .portalBiTokens) :is(ul, ol) {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.portalBiRaiz :focus-visible,
-.portalBiTokens :focus-visible {
+:where(.portalBiRaiz, .portalBiTokens) :focus-visible {
   outline: 2px solid var(--primario);
   outline-offset: 2px;
 }

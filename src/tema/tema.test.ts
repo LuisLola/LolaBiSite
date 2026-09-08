@@ -9,7 +9,17 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { resolverTema, sanearTema, TEMA_DEFECTO, TOKENS, type TokenTema } from './tema';
+import {
+  resolverMarca,
+  resolverTema,
+  sanearTema,
+  TEMA_BASE,
+  TEMA_DEFECTO,
+  temasDisponibles,
+  TOKENS,
+  type Marca,
+  type TokenTema,
+} from './tema';
 
 const RAIZ_SRC = join(__dirname, '..');
 const RUTA_TOKENS = join(RAIZ_SRC, 'ui', 'tokens.global.css');
@@ -115,6 +125,45 @@ describe('resolverTema', () => {
 
   it('el vacio significa "usa el valor de abajo"', () => {
     expect(resolverTema({ primario: '' }).primario).toBe(TEMA_DEFECTO.primario);
+  });
+});
+
+describe('varios temas', () => {
+  const marca: Marca = {
+    activo: 'Multimarca',
+    temas: {
+      [TEMA_BASE]: { primario: '#111111', lienzo: '#eeeeee' },
+      // Un tema declara solo lo que cambia: esto es lo que hace que crear uno
+      // sean una o dos filas en la lista, no treinta.
+      Multimarca: { primario: '#222222' },
+    },
+  };
+
+  it('el tema activo se apila sobre Base, y Base sobre los valores del paquete', () => {
+    const tema = resolverMarca(marca);
+    expect(tema.primario).toBe('#222222');
+    expect(tema.lienzo).toBe('#eeeeee');
+    expect(tema.tarjeta).toBe(TEMA_DEFECTO.tarjeta);
+  });
+
+  it('se puede resolver un tema distinto del activo', () => {
+    expect(resolverMarca(marca, TEMA_BASE).primario).toBe('#111111');
+  });
+
+  it('un tema que no existe cae en Base sin romper', () => {
+    expect(resolverMarca(marca, 'NoExiste').primario).toBe('#111111');
+  });
+
+  it('sin marca devuelve los valores del paquete', () => {
+    expect(resolverMarca()).toEqual(TEMA_DEFECTO);
+  });
+
+  it('Base va primero en la lista de temas y el resto alfabetico', () => {
+    const varios: Marca = {
+      activo: TEMA_BASE,
+      temas: { Retail: {}, [TEMA_BASE]: {}, Logistica: {} },
+    };
+    expect(temasDisponibles(varios)).toEqual([TEMA_BASE, 'Logistica', 'Retail']);
   });
 });
 

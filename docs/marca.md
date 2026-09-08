@@ -7,7 +7,9 @@ colores, qué se ve al cambiarlos y qué significa cada token.
 
 | Quiero… | Toco… | Lo veo… |
 |---|---|---|
+| Cambiar de tema | **Administración → Accesos → Tema del portal** | Al instante, y para todo el mundo |
 | Cambiar un color del Portal BI | La lista **Marca LC** del sitio raíz: la fila del token, columna `Valor` | **F5 en la página. Sin despliegue.** El navegador guarda el último tema hasta 1 h, así que `Ctrl+F5` la primera vez |
+| Crear un tema nuevo | Filas en **Marca LC** con la columna `Tema` rellena (solo lo que cambia) | Aparece en el desplegable de Administración |
 | Que el cromo de SharePoint (cabecera, botones, enlaces) use esos colores | `scripts\pnp\4-Publicar-Marca.ps1 -Sitios https://…/sites/X` | Al recargar el sitio. Requiere rol de Administrador de SharePoint |
 | Cambiar el color de arranque que viaja dentro del paquete | `src/ui/tokens.global.css` | **Requiere volver a empaquetar y subir el `.sppkg`.** Normalmente no hace falta: para eso está la lista |
 
@@ -18,11 +20,39 @@ no hay permiso de lectura o si una fila está en blanco.
 ## La lista "Marca LC"
 
 Vive en el sitio raíz (`https://lolacasademunt.sharepoint.com`) porque todo el
-mundo tiene lectura ahí. Tres columnas:
+mundo tiene lectura ahí. Cuatro columnas:
 
+- **Tema**: a qué tema pertenece la fila. Vacío = `Base`
 - **Token** (el `Title` de la lista): el nombre del color, por ejemplo `primario`
 - **Valor**: `#6f263d`, `rgb(111, 38, 61)` o `var(--acento)` para apuntar a otro token
 - **Nota**: para qué sirve. Es informativa, el portal no la lee
+
+## Varios temas
+
+`Base` lleva el juego completo de colores. **Cualquier otro tema declara solo lo
+que cambia** y hereda el resto de `Base`, así que crear un tema son una o dos
+filas, no treinta:
+
+| Tema | Token | Valor |
+|---|---|---|
+| Base | primario | `#6f263d` |
+| Base | primario-texto | `#fff6ed` |
+| Base | … | (el resto) |
+| Multimarca | primario | `#ba1c43` |
+| Logistica | primario | `#dfa0c9` |
+| Logistica | primario-texto | `#1a1416` |
+
+**Qué tema está puesto se elige en la aplicación**, en *Administración →
+Accesos → Tema del portal*. Lo que se elija ahí lo ve todo el mundo: se guarda
+en la fila reservada `tema-activo` de esta misma lista. Esa fila no es un color;
+el portal la ignora al aplicar los tokens.
+
+Para agrupar la vista por tema: *Todos los elementos → Agrupar por → Tema*.
+
+Aviso de contraste: si un tema cambia `primario` conviene comprobar que
+`primario-texto` sigue leyéndose encima. `4-Publicar-Marca.ps1` lo calcula y
+avisa si baja de 4.5:1; también se puede pasar `-Tema Multimarca` para
+comprobar uno concreto sin activarlo.
 
 Se crea una vez con:
 

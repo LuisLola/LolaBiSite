@@ -16,7 +16,9 @@ param(
   [switch]$SoloMostrar,
   [switch]$DesdeCss,
   [string[]]$Sitios = @(),
-  [string]$NombreTema = 'Lola Casademunt'
+  [string]$NombreTema = 'Lola Casademunt',
+  # Fuerza un tema de la lista en vez del que este activo.
+  [string]$Tema = ''
 )
 
 . "$PSScriptRoot\PortalBI.Comun.ps1"
@@ -65,10 +67,14 @@ if ($CrearLista) {
     -Xml '<Field Type="Text" Name="Valor" StaticName="Valor" DisplayName="Valor" MaxLength="128" Required="FALSE" />'
   Asegurar-Campo -Conexion $marca -Lista $ListaMarca -Interno 'Nota' `
     -Xml '<Field Type="Note" Name="Nota" StaticName="Nota" DisplayName="Nota" NumLines="2" RichText="FALSE" RichTextMode="Compatible" Required="FALSE" />'
+  # Cada tema declara SOLO lo que cambia y hereda de "Base": un tema nuevo son
+  # una o dos filas, no treinta. Vacio = Base.
+  Asegurar-Campo -Conexion $marca -Lista $ListaMarca -Interno 'Tema' `
+    -Xml '<Field Type="Text" Name="Tema" StaticName="Tema" DisplayName="Tema" MaxLength="64" Required="FALSE"><Default>Base</Default></Field>'
   Set-PnPList -Identity $ListaMarca -EnableVersioning $true -MajorVersions 100 -Connection $marca | Out-Null
 
   $vista = Get-PnPView -List $ListaMarca -Connection $marca | Where-Object { $_.DefaultView }
-  Set-PnPView -List $ListaMarca -Identity $vista.Id -Connection $marca -Fields @('Title', 'Valor', 'Nota', 'Modified') | Out-Null
+  Set-PnPView -List $ListaMarca -Identity $vista.Id -Connection $marca -Fields @('Tema', 'Title', 'Valor', 'Nota', 'Modified') | Out-Null
 
   # Se siembra con los valores que viajan en el paquete, para que la lista
   # arranque mostrando exactamente lo que ya se ve en pantalla.
@@ -84,7 +90,27 @@ if ($CrearLista) {
       Title = $token
       Valor = $tokensCss[$token]
       Nota  = $Semilla[$token]
+      Tema  = 'Base'
     } | Out-Null
+  }
+
+  # Las filas que ya existian se quedan sin Tema; el portal las trata como Base,
+  # pero se rellena para que la vista agrupada se lea bien.
+  Get-PnPListItem -List $ListaMarca -Connection $marca | Where-Object { -not $_['Tema'] } | ForEach-Object {
+    Set-PnPListItem -List $ListaMarca -Identity $_.Id -Values @{ Tema = 'Base' } -Connection $marca | Out-Null
+    Write-Host "   = Tema=Base en '$($_['Title'])'"
+  }
+
+  # Fila reservada: guarda que tema esta puesto. No es un color, y el portal la
+  # ignora al aplicar tokens.
+  if ($existentes -notcontains 'tema-activo') {
+    Add-PnPListItem -List $ListaMarca -Connection $marca -Values @{
+      Title = 'tema-activo'
+      Valor = 'Base'
+      Nota  = 'Tema del portal. Lo cambia Administracion -> Accesos; no es un color.'
+      Tema  = 'Base'
+    } | Out-Null
+    Write-Host "   + tema-activo = Base"
   }
 }
 
@@ -92,13 +118,26 @@ if ($DesdeCss) {
   $colores = Leer-Tokens-Css
   Write-Host "`nColores leidos de src\ui\tokens.global.css"
 } else {
+  # Mismo orden de capas que el portal: Base y encima el tema activo.
+  $filas = Get-PnPListItem -List $ListaMarca -PageSize 500 -Connection $marca
+  $activo = ($filas | Where-Object { [string]$_['Title'] -eq 'tema-activo' } | ForEach-Object { [string]$_['Valor'] } | Select-Object -First 1)
+  if (-not $activo) { $activo = 'Base' }
+  if ($Tema) { $activo = $Tema }   # -Tema fuerza uno concreto
+  Write-Host "`nTema: $activo"
+
   $colores = @{}
-  foreach ($fila in Get-PnPListItem -List $ListaMarca -PageSize 500 -Connection $marca) {
-    $clave = [string]$fila['Title']
-    $valor = [string]$fila['Valor']
-    if ($clave -and $valor) { $colores[$clave.Trim()] = $valor.Trim().ToLower() }
+  foreach ($capa in @('Base', $activo) | Select-Object -Unique) {
+    foreach ($fila in $filas) {
+      $clave = [string]$fila['Title']
+      $valor = [string]$fila['Valor']
+      $temaFila = ([string]$fila['Tema']).Trim()
+      if (-not $temaFila) { $temaFila = 'Base' }
+      if ($clave -eq 'tema-activo' -or -not $clave -or -not $valor) { continue }
+      if ($temaFila -ne $capa) { continue }
+      $colores[$clave.Trim()] = $valor.Trim().ToLower()
+    }
   }
-  Write-Host "`n$($colores.Count) colores leidos de la lista '$ListaMarca'"
+  Write-Host "$($colores.Count) colores leidos de la lista '$ListaMarca'"
   # Lo que falte en la lista se completa con el paquete.
   foreach ($par in (Leer-Tokens-Css).GetEnumerator()) {
     if (-not $colores.ContainsKey($par.Key)) { $colores[$par.Key] = $par.Value }

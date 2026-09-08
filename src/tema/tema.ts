@@ -100,6 +100,54 @@ export const TEMA_DEFECTO: Tema = {
   'ancho-maximo': '1680px',
 };
 
+/**
+ * Tema de partida. Lleva el juego completo de valores; los demas temas solo
+ * declaran lo que cambian y heredan de aqui.
+ */
+export const TEMA_BASE = 'Base';
+
+/**
+ * Fila reservada de la lista de marca que guarda que tema esta activo. No es un
+ * token, asi que sanearTema la ignora y nunca llega al CSS.
+ */
+export const TOKEN_TEMA_ACTIVO = 'tema-activo';
+
+/** Lo que hay en la lista "Marca LC": varios temas y cual esta puesto. */
+export interface Marca {
+  /** Nombre del tema activo. Si no existe, se usa TEMA_BASE. */
+  activo: string;
+  /** Valores por tema. Cada tema declara solo lo que cambia. */
+  temas: Record<string, Partial<Tema>>;
+}
+
+export const MARCA_VACIA: Marca = { activo: TEMA_BASE, temas: {} };
+
+/**
+ * De donde salen los temas. En la intranet lo implementa MarcaRepository contra
+ * la lista de SharePoint; en local no se pasa y manda TEMA_DEFECTO.
+ */
+export interface ServicioMarca {
+  leer(): Promise<Marca>;
+  guardarTemaActivo(tema: string): Promise<void>;
+}
+
+/**
+ * Aplana la marca a un tema concreto: valores del paquete, encima el tema base
+ * y encima el activo. Asi un tema de departamento puede ser una sola fila.
+ */
+export function resolverMarca(marca: Marca = MARCA_VACIA, tema: string = marca.activo): Tema {
+  const capas = [marca.temas[TEMA_BASE]];
+  if (tema !== TEMA_BASE) capas.push(marca.temas[tema]);
+  return resolverTema(...capas);
+}
+
+/** Temas disponibles, con Base siempre primero. */
+export function temasDisponibles(marca: Marca): string[] {
+  const nombres = Object.keys(marca.temas).filter((nombre) => nombre !== TEMA_BASE);
+  nombres.sort((a, b) => a.localeCompare(b, 'es'));
+  return [TEMA_BASE, ...nombres];
+}
+
 const ES_TOKEN = new Set<string>(TOKENS as readonly string[]);
 
 const LONGITUD = /^-?\d+(\.\d+)?(px|rem|em|%|vw|vh|ch)$/;

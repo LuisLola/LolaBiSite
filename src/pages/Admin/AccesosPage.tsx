@@ -10,7 +10,8 @@ import { useDepartamentos } from '../../hooks/usePaneles';
 import { AreaAvatar } from '../../ui/AreaAvatar';
 import { Badge } from '../../ui/Badge';
 import { BotonEnlace, Button } from '../../ui/Button';
-import { Campo, Input } from '../../ui/Campos';
+import { useTema } from '../../tema/TemaProvider';
+import { Campo, Input, Select } from '../../ui/Campos';
 import { Card } from '../../ui/Card';
 import { SectionLabel } from '../../ui/SectionLabel';
 import estilos from './AccesosPage.module.css';
@@ -77,6 +78,8 @@ export function AccesosPage() {
         365 y el <em>objectId</em> del equipo es lo que manda.
       </p>
 
+      <TemaDelPortal />
+
       <div className={estilos.rejilla}>
         {departamentos.map((departamento) => (
           <TarjetaArea
@@ -89,6 +92,64 @@ export function AccesosPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+/**
+ * El tema del portal. Es un dato compartido, no una preferencia del navegador:
+ * lo que se elige aqui lo ve todo el mundo.
+ */
+function TemaDelPortal() {
+  const { temas, activo, puedeCambiar, guardando, cambiar } = useTema();
+  const [mensaje, setMensaje] = useState('');
+
+  if (!puedeCambiar) return null;
+
+  return (
+    <Card className={estilos.tema}>
+      <div>
+        <SectionLabel>Tema del portal</SectionLabel>
+        <p className={estilos.subtitulo}>
+          Los colores salen de la lista <strong>Marca LC</strong>. Cada tema declara solo lo que
+          cambia y hereda del tema <strong>Base</strong>. Lo que elijas aquí lo ve todo el mundo.
+        </p>
+      </div>
+      <div className={estilos.temaControles}>
+        <Campo etiqueta="Tema activo">
+          {(id) => (
+            <Select
+              id={id}
+              value={activo}
+              disabled={guardando}
+              onChange={(evento) => {
+                const elegido = evento.target.value;
+                void cambiar(elegido).then(
+                  () => setMensaje(`Tema «${elegido}» aplicado para todos.`),
+                  (error: unknown) => {
+                    console.error('[Portal BI] No se ha podido guardar el tema', error);
+                    setMensaje('No se ha podido guardar: ¿tienes permiso de escritura en Marca LC?');
+                  },
+                );
+              }}
+            >
+              {temas.map((tema) => (
+                <option key={tema} value={tema}>
+                  {tema}
+                </option>
+              ))}
+            </Select>
+          )}
+        </Campo>
+        {temas.length === 1 ? (
+          <p className={estilos.nota}>
+            Solo hay un tema. Para añadir otro, crea filas en <strong>Marca LC</strong> con la
+            columna <strong>Tema</strong> rellena: por ejemplo <code>Multimarca</code> con la fila{' '}
+            <code>primario</code>.
+          </p>
+        ) : null}
+        {mensaje ? <p className={estilos.nota}>{mensaje}</p> : null}
+      </div>
+    </Card>
   );
 }
 
