@@ -1,6 +1,6 @@
 /*
  * Protege las tres invariantes del tema:
- *  1. TOKENS, TEMA_DEFECTO y el bloque BASE de tokens.css dicen lo mismo.
+ *  1. TOKENS, TEMA_DEFECTO y el bloque BASE de tokens.global.css dicen lo mismo.
  *  2. Ningun CSS del portal escribe un color a mano ni usa un token inexistente.
  *  3. El merge de capas respeta el orden y el saneado no deja pasar basura.
  *
@@ -12,7 +12,7 @@ import { describe, expect, it } from 'vitest';
 import { resolverTema, sanearTema, TEMA_DEFECTO, TOKENS, type TokenTema } from './tema';
 
 const RAIZ_SRC = join(__dirname, '..');
-const RUTA_TOKENS = join(RAIZ_SRC, 'ui', 'tokens.css');
+const RUTA_TOKENS = join(RAIZ_SRC, 'ui', 'tokens.global.css');
 
 function cssDelPortal(directorio: string): string[] {
   const encontrados: string[] = [];
@@ -53,11 +53,11 @@ describe('contrato del tema', () => {
     expect(Object.keys(TEMA_DEFECTO).sort()).toEqual([...TOKENS].sort());
   });
 
-  it('los tokens base de tokens.css son exactamente TOKENS', () => {
+  it('los tokens base de tokens.global.css son exactamente TOKENS', () => {
     expect([...base.keys()].sort()).toEqual([...TOKENS].sort());
   });
 
-  it('cada token base vale lo mismo en tokens.css y en TEMA_DEFECTO', () => {
+  it('cada token base vale lo mismo en tokens.global.css y en TEMA_DEFECTO', () => {
     for (const token of TOKENS) {
       expect(base.get(token)?.toLowerCase(), `token ${token}`).toBe(TEMA_DEFECTO[token].toLowerCase());
     }
@@ -85,7 +85,7 @@ describe('uso de los tokens en el CSS', () => {
     }
   });
 
-  it('ningun CSS salvo tokens.css escribe un color a mano', () => {
+  it('ningun CSS salvo tokens.global.css escribe un color a mano', () => {
     const literal = /#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/;
     for (const ruta of TODOS_LOS_CSS) {
       if (ruta === RUTA_TOKENS) continue;

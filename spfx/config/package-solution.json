@@ -1,7 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "Portal BI · Lola Casademunt",
+    // Sin espacios ni signos: este valor va al atributo Name del manifiesto XML
+    // y SharePoint lo valida contra NameDefinition. Con "Portal BI · Lola
+    // Casademunt" el paquete se subia al catalogo pero quedaba
+    // IsValidAppPackage: False y no aparecia como aplicacion.
+    "name": "portal-bi-client-side-solution",
     "id": "06fba074-d2b5-4340-b2ad-f7d51b577c8d",
     "version": "0.2.0.0",
     "includeClientSideAssets": true,
@@ -31,13 +35,22 @@
     },
     "features": [
       {
-        "title": "Portal BI · Lola Casademunt",
+        "title": "Portal BI - Lola Casademunt",
         "description": "Despliega el web part Portal BI y el botón global que lo abre en una ventana.",
         "id": "b5c01a4e-27f2-405d-9e2a-b064865c47a4",
-        "version": "0.2.0.0",
-        "assets": {
-          "elementFiles": ["ClientSideInstance.xml"]
-        }
+        "version": "0.2.0.0"
+
+        // El boton global esta DESACTIVADO a proposito. ClientSideInstance.xml
+        // registra el Application Customizer en todas las paginas de todos los
+        // sitios del tenant en el momento de publicar la solucion, asi que se
+        // activa cuando se decida, no por defecto.
+        //
+        // Para activarlo: descomentar y volver a empaquetar, subiendo antes la
+        // version de la solucion.
+        //   "assets": { "elementFiles": ["ClientSideInstance.xml"] }
+        //
+        // Tambien se puede anadir la fila a mano en la lista "Tenant Wide
+        // Extensions" del catalogo de aplicaciones, sin redesplegar.
       }
     ]
   },

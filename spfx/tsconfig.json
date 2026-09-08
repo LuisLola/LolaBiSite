@@ -1,34 +1,37 @@
 {
-  "extends": "./node_modules/@microsoft/rush-stack-compiler-4.7/includes/tsconfig-web.json",
+  "extends": "./node_modules/@microsoft/spfx-web-build-rig/profiles/default/tsconfig-base.json",
   "compilerOptions": {
-    "target": "es2017",
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    // /src usa el runtime automatico de JSX (no escribe `import React`), igual
+    // que en Vite. React 17 ya trae react/jsx-runtime, asi que funciona aqui.
+    // Sin esto, cada .tsx da TS2686 "React refers to a UMD global".
     "jsx": "react-jsx",
-    "declaration": true,
-    "sourceMap": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "outDir": "lib",
-    "inlineSources": false,
-    "noImplicitAny": true,
-    "strict": true,
-    "typeRoots": ["./node_modules/@types", "./node_modules/@microsoft"],
-    "types": ["webpack-env"],
-    "lib": [
-      "es2015",
-      "es2017",
-      "dom",
-      "es2015.collection",
-      "es2015.promise",
-      "es2018.promise"
-    ]
+
+    // El rig apunta a es5. El codigo compartido usa Object.entries, Promise
+    // .finally, iteracion de Map/Set y \p{...} en expresiones regulares.
+    "target": "es2019",
+    "lib": ["dom", "dom.iterable", "es2019"],
+
+    // src/compartido es un junction a /src. Sin esto TypeScript resuelve el
+    // destino real, lo ve fuera de rootDir y vuelve a romper el emit.
+    "preserveSymlinks": true,
+
+    // Con las dependencias de la raiz instaladas hay DOS copias de los tipos de
+    // React: 18 en la raiz (para Vite) y 17 aqui (para SPFx). Los ficheros
+    // compartidos resuelven hacia arriba y cogerian la 18, lo que produce
+    // cientos de errores falsos ("Element no asignable a ReactNode",
+    // contentEditable...). Esto fija la 17, que es la que empaqueta SPFx.
+    "baseUrl": ".",
+    "paths": {
+      "react": ["node_modules/@types/react"],
+      "react/*": ["node_modules/@types/react/*"],
+      "react-dom": ["node_modules/@types/react-dom"],
+      "react-dom/*": ["node_modules/@types/react-dom/*"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "../src/**/*.ts", "../src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": [
-    "../src/main.tsx",
-    "../src/**/*.test.ts",
-    "../src/data/excel/ExcelPanelRepository.ts"
+    "src/compartido/main.tsx",
+    "src/compartido/**/*.test.ts",
+    "src/compartido/data/excel/ExcelPanelRepository.ts"
   ]
 }

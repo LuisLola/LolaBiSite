@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "Read(//c/Users/stefanychoez/OneDrive - Lola Casademunt S.L/Escritorio/Lolacasademunt-projects/lola-intranet/spfx-home/**)",
+      "Read(//c/Users/stefanychoez/OneDrive - Lola Casademunt S.L/Escritorio/Lolacasademunt-projects/lola-intranet/spfx-home/config/**)",
+      "Read(//c/Users/stefanychoez/OneDrive - Lola Casademunt S.L/Escritorio/Lolacasademunt-projects/lola-intranet/spfx-home/src/**)"
+    ]
+  }
+}

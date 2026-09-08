@@ -4,6 +4,10 @@
 #
 #   .\2-Migrar-Paneles.ps1 -Simular    # imprime lo que haria, no escribe
 #   .\2-Migrar-Paneles.ps1
+#
+# La traduccion de nombres internos origen -> destino esta en $MapaOrigen
+# (PortalBI.Comun.ps1). No la salte: la lista de origen llama "Departamento" a
+# la columna "Area de Trabajo".
 
 param(
   [switch]$Simular
@@ -21,34 +25,50 @@ Get-PnPListItem -List $ListaPaneles -PageSize 500 -Connection $destino | ForEach
   [void]$yaEstan.Add("$($_['Title'])|$url")
 }
 
-# El origen tiene menos columnas que el destino: se lee lo que haya y el resto
-# queda vacio (Estado toma su valor por defecto, Activo).
-function Valor {
-  param($Item, [string]$Interno)
-  if ($Item.FieldValues.ContainsKey($Interno)) { return $Item.FieldValues[$Interno] }
-  return $null
-}
+function Valor-Origen {
+  param($Item, [string]$Interno, [string]$Tipo)
 
-# Los campos URL se leen como FieldUrlValue y se escriben con el convenio
-# "url, descripcion" que entiende Add-PnPListItem.
-function UrlAValor {
-  param($Valor, [string]$Interno)
-  if (-not $Valor) { return $null }
-  if ($Valor.Url -like '*,*') {
-    throw "La URL de '$Interno' contiene una coma y PnP la partiria mal: $($Valor.Url). Copia esa fila a mano."
+  if (-not $Item.FieldValues.ContainsKey($Interno)) { return $null }
+  $bruto = $Item.FieldValues[$Interno]
+  if ($null -eq $bruto) { return $null }
+
+  switch ($Tipo) {
+    'usuario' {
+      # FieldUserValue: se guarda el nombre visible, que es lo que el portal
+      # muestra como texto informativo.
+      return [string]$bruto.LookupValue
+    }
+    'url' {
+      # FieldUrlValue -> convenio "url, descripcion" que entiende Add-PnPListItem.
+      if ($bruto.Url -like '*,*') {
+        throw "La URL de '$Interno' contiene una coma y PnP la partiria mal: $($bruto.Url). Copia esa fila a mano."
+      }
+      if ($bruto.Description) { return "$($bruto.Url), $($bruto.Description)" }
+      return [string]$bruto.Url
+    }
+    default { return [string]$bruto }
   }
-  if ($Valor.Description) { return "$($Valor.Url), $($Valor.Description)" }
-  return $Valor.Url
 }
 
 $creados = 0
 $omitidos = 0
+# Orden por departamento: el origen no lo trae y dejarlo todo a 0 deja la
+# pantalla de administracion sin nada con lo que ordenar.
+$ordenPorDepartamento = @{}
 
 Get-PnPListItem -List $ListaOrigen -PageSize 500 -Connection $origen | ForEach-Object {
   $item = $_
-  $titulo = [string](Valor $item 'Title')
-  $urlPanel = Valor $item 'Url_x0020_Panel'
-  $clave = "$titulo|$(if ($urlPanel) { $urlPanel.Url } else { '' })"
+
+  $valores = @{}
+  foreach ($destinoInterno in $MapaOrigen.Keys) {
+    $regla = $MapaOrigen[$destinoInterno]
+    $valor = Valor-Origen $item $regla.origen $regla.tipo
+    if ($null -ne $valor -and '' -ne $valor) { $valores[$destinoInterno] = $valor }
+  }
+
+  $titulo = [string]$valores['Title']
+  $urlPanel = if ($valores.ContainsKey('Url_x0020_Panel')) { ($valores['Url_x0020_Panel'] -split ', ')[0] } else { '' }
+  $clave = "$titulo|$urlPanel"
 
   if ($yaEstan.Contains($clave)) {
     Write-Host "= omitido: $titulo"
@@ -56,31 +76,14 @@ Get-PnPListItem -List $ListaOrigen -PageSize 500 -Connection $origen | ForEach-O
     return
   }
 
-  $valores = @{ Title = $titulo }
-  foreach ($par in @(
-      @{ interno = 'Area_x0020_de_x0020_Trabajo'; tipo = 'texto' },
-      @{ interno = 'Departamento';                tipo = 'texto' },
-      @{ interno = 'Descripcion';                 tipo = 'texto' },
-      @{ interno = 'Responsable';                 tipo = 'texto' },
-      @{ interno = 'GrupoAcceso';                 tipo = 'texto' },
-      @{ interno = 'Estado';                      tipo = 'texto' },
-      @{ interno = 'HoraActualizacion';           tipo = 'texto' },
-      @{ interno = 'Destacado';                   tipo = 'crudo' },
-      @{ interno = 'Orden';                       tipo = 'crudo' },
-      @{ interno = 'Url_x0020_Panel';             tipo = 'url' },
-      @{ interno = 'UrlDirecta';                  tipo = 'url' }
-    )) {
-    $bruto = Valor $item $par.interno
-    if ($null -eq $bruto -or '' -eq $bruto) { continue }
-    switch ($par.tipo) {
-      'url'   { $valores[$par.interno] = UrlAValor $bruto $par.interno }
-      'texto' { $valores[$par.interno] = [string]$bruto }
-      default { $valores[$par.interno] = $bruto }
-    }
-  }
+  $dpto = if ($valores.ContainsKey('Departamento')) { [string]$valores['Departamento'] } else { '(sin departamento)' }
+  if (-not $ordenPorDepartamento.ContainsKey($dpto)) { $ordenPorDepartamento[$dpto] = 0 }
+  $ordenPorDepartamento[$dpto] += 10
+  $valores['Orden'] = $ordenPorDepartamento[$dpto]
 
   if ($Simular) {
-    Write-Host "+ (simulado) $titulo  [$($valores['Departamento'])]"
+    Write-Host ("+ (simulado) {0,-45} dpto={1,-15} orden={2} area='{3}'" -f `
+      $titulo, $dpto, $valores['Orden'], $valores['Area_x0020_de_x0020_Trabajo'])
   } else {
     Add-PnPListItem -List $ListaPaneles -Values $valores -Connection $destino | Out-Null
     Write-Host "+ $titulo"
@@ -90,4 +93,5 @@ Get-PnPListItem -List $ListaOrigen -PageSize 500 -Connection $origen | ForEach-O
 
 $verbo = if ($Simular) { 'se crearian' } else { 'creados' }
 Write-Host "`n$creados $verbo, $omitidos omitidos (ya estaban)." -ForegroundColor Green
+Write-Host "Estado, Destacado y UrlDirecta quedan en su valor por defecto: el origen no los trae."
 if ($Simular) { Write-Host "Nada escrito. Re-ejecuta sin -Simular para aplicarlo." }

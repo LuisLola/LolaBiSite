@@ -16,13 +16,22 @@ solo monta `<PortalBI />` de `/src` y le inyecta los repositorios de SharePoint.
 
 | Requisito | Valor |
 |---|---|
-| Node.js | 18.17.x para `/spfx` (la cadena de SPFx 1.20 no funciona con Node 20+) |
-| Gulp CLI | `npm i -g gulp-cli` |
+| Node.js | v22 LTS (`>=22.14.0 <23.0.0`) para `/spfx`, igual que el repo de la intranet |
+| Heft | `npm i -g @rushstack/heft` (opcional: también está en el proyecto) |
 | PowerShell | 7 con el módulo `PnP.PowerShell` |
 | Permisos | Administrador de SharePoint (`serviceaccountm365@lolacasademunt.com`) |
 
-El proyecto raíz (Vite) sí corre con Node 20/22/24. Solo `/spfx` exige Node 18:
-usa `nvm use 18` antes de empaquetar.
+`/spfx` usa **SPFx 1.22.1 con la cadena Heft**, no gulp: `gulp bundle --ship` no
+existe en este proyecto. Es la misma versión y el mismo toolchain que
+`lola-intranet/spfx-home`, a propósito.
+
+El proyecto raíz (Vite) corre con cualquier Node moderno. Si tu Node por defecto
+es otro, `fnm` sirve para cambiar solo en esa terminal:
+
+```powershell
+fnm env --shell power-shell | Out-String | Invoke-Expression
+fnm use 22.19.0
+```
 
 ## 1. Aprovisionar sitio y listas
 
@@ -113,12 +122,10 @@ vacío: un departamento, un área.
 
 ## 4. Empaquetar y desplegar
 
-```bash
+```powershell
 cd spfx
-nvm use 18
 npm install
-gulp bundle --ship
-gulp package-solution --ship
+npm run build     # heft test --clean --production && heft package-solution --production
 ```
 
 Sale `spfx/sharepoint/solution/portal-bi.sppkg`. Luego:
@@ -178,18 +185,9 @@ a Teams; no está hecho.
 
 ## 6. Probar sin empaquetar
 
-Comprobar tipos del lado SPFx **sin Node 18** (útil antes de cambiar de versión
-de Node solo para ver si compila):
-
-```bash
-npx tsc -p spfx/tsconfig.check.json
-```
-
-El build de verdad sí necesita Node 18:
-
-```bash
+```powershell
 cd spfx
-gulp serve --nobrowser
+npm start          # heft start --clean
 ```
 
 y abre el workbench **del sitio del portal**:
@@ -221,11 +219,29 @@ Están en una lista aparte y se cambian sin recompilar. Ver **[docs/marca.md](ma
 
 ## Detalles de integración que conviene conocer
 
-- **CSS Modules.** La interfaz usa `.module.css`, que la cadena de SPFx no
-  procesa de serie. `spfx/gulpfile.js` añade las dos reglas de webpack que
-  faltan (`style-loader` + `css-loader` con `modules`). Si un día el build se
-  queja de un `.css`, ese es el sitio.
-- **El CSS va scopeado.** `src/ui/global.css` y `src/ui/tokens.css` cuelgan todo
+- **`spfx/src/compartido` es un enlace a `/src`.** La cadena Heft fija `rootDir`
+  al `src` del proyecto de SPFx y el plugin de sass **solo escanea esa carpeta**:
+  con el código compartido fuera, sus `*.module.css` no reciben tipos ni se
+  compilan, y el emit se descoloca a `lib/spfx/src/…` rompiendo los entrypoints
+  de `config.json`. El enlace lo resuelve sin duplicar código: se edita `/src` y
+  lo ven los dos builds. Lo crea `npm install` (postinstall) o `npm run enlazar`,
+  y está en `.gitignore`. Por eso `tsconfig.json` necesita
+  `preserveSymlinks: true`.
+- **CSS Modules.** La interfaz usa `.module.css`, y la cadena Heft los procesa de
+  serie: el rig declara `fileExtensions: ['.sass','.scss','.css']` y genera los
+  tipos. Los ficheros que **no** son módulos llevan el sufijo `.global.css`
+  (`src/ui/tokens.global.css`, `src/ui/base.global.css`). Ninguna regla de
+  webpack a mano.
+- **Dos copias de los tipos de React.** La raíz trae `@types/react` 18 (Vite) y
+  `/spfx` la 17 (SPFx). Los ficheros compartidos resolverían hacia arriba y
+  cogerían la 18, con cientos de errores falsos de `ReactNode`. `tsconfig.json`
+  fija la 17 con `paths`.
+- **JSX automático.** `/src` no escribe `import React`; el rig compila con JSX
+  clásico, así que `tsconfig.json` pone `jsx: react-jsx` (React 17 ya trae
+  `react/jsx-runtime`). También sube `target` a `es2019`: el rig apunta a `es5` y
+  el código compartido usa `Object.entries`, `Promise.finally`, iteración de
+  `Map`/`Set` y `\p{…}` en expresiones regulares.
+- **El CSS va scopeado.** `src/ui/base.global.css` y `src/ui/tokens.global.css` cuelgan todo
   de `.portalBiRaiz` / `.portalBiTokens`. Dentro de SPFx, `style-loader` inyecta
   ese CSS en el `<head>` de la página anfitriona: un selector de elemento suelto
   (`body`, `a`, `ul`, `h1`) repintaría la página de SharePoint entera. No añadas

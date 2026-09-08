@@ -4,7 +4,7 @@
  *
  * El portal se carga en un <iframe> a su propia pagina, no montando <PortalBI />
  * aqui, por tres razones concretas:
- *  - global.css pinta body y style-loader lo inyecta en el head de la pagina
+ *  - base.global.css pinta body y style-loader lo inyecta en el head de la pagina
  *    anfitriona: montarlo en proceso repinta esa pagina.
  *  - PortalBI usa HashRouter sin basename; dos instancias en la misma pagina
  *    se pelean por window.location.hash.
@@ -18,7 +18,7 @@ import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import estilos from './PortalEnModal.module.css';
-import './tokens.css';
+import './tokens.global.css';
 
 export interface PortalEnModalProps {
   /** Pagina del portal, absoluta. */

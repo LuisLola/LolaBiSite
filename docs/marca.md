@@ -9,9 +9,9 @@ colores, qué se ve al cambiarlos y qué significa cada token.
 |---|---|---|
 | Cambiar un color del Portal BI | La lista **Marca LC** del sitio raíz: la fila del token, columna `Valor` | **F5 en la página. Sin despliegue.** El navegador guarda el último tema hasta 1 h, así que `Ctrl+F5` la primera vez |
 | Que el cromo de SharePoint (cabecera, botones, enlaces) use esos colores | `scripts\pnp\4-Publicar-Marca.ps1 -Sitios https://…/sites/X` | Al recargar el sitio. Requiere rol de Administrador de SharePoint |
-| Cambiar el color de arranque que viaja dentro del paquete | `src/ui/tokens.css` | **Requiere volver a empaquetar y subir el `.sppkg`.** Normalmente no hace falta: para eso está la lista |
+| Cambiar el color de arranque que viaja dentro del paquete | `src/ui/tokens.global.css` | **Requiere volver a empaquetar y subir el `.sppkg`.** Normalmente no hace falta: para eso está la lista |
 
-La lista es el origen de verdad en caliente. `src/ui/tokens.css` y
+La lista es el origen de verdad en caliente. `src/ui/tokens.global.css` y
 `src/tema/tema.ts` son la semilla versionada: se usan si la lista no existe, si
 no hay permiso de lectura o si una fila está en blanco.
 
@@ -75,7 +75,7 @@ Reglas:
 ## Los tokens derivados: no se pueden editar
 
 No hace falta y es a propósito. Se calculan con `color-mix()` en
-`src/ui/tokens.css` a partir de los de arriba, así que siguen a la marca solos.
+`src/ui/tokens.global.css` a partir de los de arriba, así que siguen a la marca solos.
 
 | Token derivado | Se calcula desde |
 |---|---|
@@ -133,8 +133,8 @@ mínimo de accesibilidad. Ese aviso conviene tomárselo en serio.
   `localStorage` (sin parpadeo a partir de la segunda visita) y otra vez cuando
   llega la lista.
 - `src/data/sharepoint/MarcaRepository.ts` — la lectura de la lista.
-- `src/ui/tokens.css` — los valores de arranque y los derivados.
-- `src/tema/tema.test.ts` — falla si `tokens.css` y `tema.ts` se desincronizan,
+- `src/ui/tokens.global.css` — los valores de arranque y los derivados.
+- `src/tema/tema.test.ts` — falla si `tokens.global.css` y `tema.ts` se desincronizan,
   si algún CSS escribe un color a mano o usa un token que no existe, y si el
   saneado deja pasar una inyección de CSS.
 

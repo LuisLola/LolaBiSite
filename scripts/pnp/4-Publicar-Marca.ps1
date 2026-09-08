@@ -9,7 +9,7 @@
 #   .\4-Publicar-Marca.ps1 -CrearLista                       # crea y siembra la lista
 #   .\4-Publicar-Marca.ps1 -SoloMostrar                      # imprime la paleta, no aplica
 #   .\4-Publicar-Marca.ps1 -Sitios https://.../sites/PortalBI
-#   .\4-Publicar-Marca.ps1 -DesdeCss -SoloMostrar            # ignora la lista, lee tokens.css
+#   .\4-Publicar-Marca.ps1 -DesdeCss -SoloMostrar            # ignora la lista, lee tokens.global.css
 
 param(
   [switch]$CrearLista,
@@ -23,7 +23,7 @@ param(
 
 $UrlSitioMarca = $UrlTenant          # el sitio raiz: todo el mundo tiene lectura
 $ListaMarca    = 'Marca LC'
-$RutaTokens    = Join-Path (Resolve-Path "$PSScriptRoot\..\..") 'src\ui\tokens.css'
+$RutaTokens    = Join-Path (Resolve-Path "$PSScriptRoot\..\..") 'src\ui\tokens.global.css'
 
 # Tokens que se siembran en la lista, con su descripcion. Es el subconjunto que
 # de verdad se toca; el resto de src/tema/tema.ts sigue valiendo si se anade una
@@ -57,7 +57,9 @@ $marca = Conectar $UrlSitioMarca
 
 if ($CrearLista) {
   Write-Host "`n[$ListaMarca]"
-  Asegurar-Lista -Conexion $marca -Titulo $ListaMarca -UrlInterna 'MarcaLC' | Out-Null
+  # Sin quick launch: vive en la raiz de la intranet y no debe salir en su
+  # navegacion. Se llega por la URL o desde docs/marca.md.
+  Asegurar-Lista -Conexion $marca -Titulo $ListaMarca -UrlInterna 'MarcaLC' -SinQuickLaunch | Out-Null
   Renombrar-Title -Conexion $marca -Lista $ListaMarca -Etiqueta 'Token'
   Asegurar-Campo -Conexion $marca -Lista $ListaMarca -Interno 'Valor' `
     -Xml '<Field Type="Text" Name="Valor" StaticName="Valor" DisplayName="Valor" MaxLength="128" Required="FALSE" />'
@@ -66,21 +68,21 @@ if ($CrearLista) {
   Set-PnPList -Identity $ListaMarca -EnableVersioning $true -MajorVersions 100 -Connection $marca | Out-Null
 
   $vista = Get-PnPView -List $ListaMarca -Connection $marca | Where-Object { $_.DefaultView }
-  Set-PnPView -List $ListaMarca -Identity $vista.Id -Connection $marca -Values @{
-    ViewFields = [string[]]@('Title', 'Valor', 'Nota', 'Modified')
-  } | Out-Null
+  Set-PnPView -List $ListaMarca -Identity $vista.Id -Connection $marca -Fields @('Title', 'Valor', 'Nota', 'Modified') | Out-Null
 
   # Se siembra con los valores que viajan en el paquete, para que la lista
   # arranque mostrando exactamente lo que ya se ve en pantalla.
-  $desdeCss = Leer-Tokens-Css
+  # Cuidado con el nombre: PowerShell no distingue mayusculas, asi que una
+  # variable $desdeCss seria el mismo que el parametro -DesdeCss (un switch).
+  $tokensCss = Leer-Tokens-Css
   $existentes = (Get-PnPListItem -List $ListaMarca -Fields 'Title' -PageSize 500 -Connection $marca |
     ForEach-Object { $_['Title'] })
   foreach ($token in $Semilla.Keys) {
     if ($existentes -contains $token) { Write-Host "   = $token"; continue }
-    Write-Host "   + $token = $($desdeCss[$token])"
+    Write-Host "   + $token = $($tokensCss[$token])"
     Add-PnPListItem -List $ListaMarca -Connection $marca -Values @{
       Title = $token
-      Valor = $desdeCss[$token]
+      Valor = $tokensCss[$token]
       Nota  = $Semilla[$token]
     } | Out-Null
   }
@@ -88,7 +90,7 @@ if ($CrearLista) {
 
 if ($DesdeCss) {
   $colores = Leer-Tokens-Css
-  Write-Host "`nColores leidos de src\ui\tokens.css"
+  Write-Host "`nColores leidos de src\ui\tokens.global.css"
 } else {
   $colores = @{}
   foreach ($fila in Get-PnPListItem -List $ListaMarca -PageSize 500 -Connection $marca) {
@@ -126,6 +128,7 @@ function Mezclar-Hex {
 $primario = $colores['primario']
 $tarjeta  = $colores['tarjeta']
 $texto    = $colores['texto']
+$lienzo   = $colores['lienzo']
 
 $paleta = @{
   themePrimary         = $primario
@@ -137,19 +140,20 @@ $paleta = @{
   themeDarkAlt         = (Mezclar-Hex $primario '#000000' 0.05)
   themeDark            = (Mezclar-Hex $primario '#000000' 0.15)
   themeDarker          = (Mezclar-Hex $primario '#000000' 0.28)
-  # Los neutros se mezclan de tarjeta hacia texto, no en gris frio: aqui esta el
+  # Los neutros se mezclan desde el LIENZO (crema) hacia el texto, no desde el
+  # blanco: mezclar desde blanco da el gris frio de fabrica. Aqui esta el
   # aspecto corporativo, con los grises calidos del portal.
-  neutralLighterAlt    = (Mezclar-Hex $tarjeta $texto 0.02)
-  neutralLighter       = (Mezclar-Hex $tarjeta $texto 0.04)
-  neutralLight         = (Mezclar-Hex $tarjeta $texto 0.08)
-  neutralQuaternaryAlt = (Mezclar-Hex $tarjeta $texto 0.13)
-  neutralQuaternary    = (Mezclar-Hex $tarjeta $texto 0.16)
-  neutralTertiaryAlt   = (Mezclar-Hex $tarjeta $texto 0.28)
-  neutralTertiary      = (Mezclar-Hex $tarjeta $texto 0.38)
-  neutralSecondary     = (Mezclar-Hex $tarjeta $texto 0.55)
-  neutralPrimaryAlt    = (Mezclar-Hex $tarjeta $texto 0.78)
-  neutralPrimary       = (Mezclar-Hex $tarjeta $texto 0.88)
-  neutralDark          = (Mezclar-Hex $tarjeta $texto 0.95)
+  neutralLighterAlt    = (Mezclar-Hex $lienzo $texto 0.02)
+  neutralLighter       = (Mezclar-Hex $lienzo $texto 0.04)
+  neutralLight         = (Mezclar-Hex $lienzo $texto 0.08)
+  neutralQuaternaryAlt = (Mezclar-Hex $lienzo $texto 0.13)
+  neutralQuaternary    = (Mezclar-Hex $lienzo $texto 0.16)
+  neutralTertiaryAlt   = (Mezclar-Hex $lienzo $texto 0.28)
+  neutralTertiary      = (Mezclar-Hex $lienzo $texto 0.38)
+  neutralSecondary     = (Mezclar-Hex $lienzo $texto 0.55)
+  neutralPrimaryAlt    = (Mezclar-Hex $lienzo $texto 0.78)
+  neutralPrimary       = (Mezclar-Hex $lienzo $texto 0.88)
+  neutralDark          = (Mezclar-Hex $lienzo $texto 0.95)
   black                = $texto
   white                = $tarjeta
   primaryBackground    = $colores['lienzo']

@@ -13,8 +13,8 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import * as strings from 'BotonPortalBiStrings';
 
-import { URL_PAGINA_PORTAL, URL_SITIO_PORTAL } from '../../../../src/config/tenant.config';
-import { PortalEnModal } from '../../../../src/ui/PortalEnModal';
+import { URL_PAGINA_PORTAL, URL_SITIO_PORTAL } from '../../compartido/config/tenant.config';
+import { PortalEnModal } from '../../compartido/ui/PortalEnModal';
 
 const ORIGEN = 'BotonPortalBi';
 

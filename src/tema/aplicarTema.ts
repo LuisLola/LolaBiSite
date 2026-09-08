@@ -4,7 +4,7 @@
  * Detalles que importan:
  *  - Una sola hoja, reemplazada (no acumulada) en cada aplicacion.
  *  - Selector de clase repetido (.portalBiRaiz.portalBiRaiz) para ganar a
- *    tokens.css sin depender del orden de inyeccion: dentro de SPFx,
+ *    tokens.global.css sin depender del orden de inyeccion: dentro de SPFx,
  *    style-loader tambien inyecta en runtime y ese orden no esta garantizado.
  *  - Si alguien monta un createPortal(..., document.body) nuevo, ese subarbol
  *    pierde las variables: tiene que llevar la clase portalBiTokens.

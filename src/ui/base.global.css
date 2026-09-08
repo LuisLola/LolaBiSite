@@ -6,8 +6,13 @@
  * fichero en el head de la pagina anfitriona: un selector de elemento suelto
  * (body, a, ul, h1) repintaria la pagina de SharePoint entera y le quitaria las
  * vinetas a su navegacion.
+ *
+ * Los tokens NO se traen con @import: la cadena de SPFx compila estos ficheros
+ * con sass, y sass deja los @import de .css como imports nativos que el bundle
+ * no resuelve. Se importan los dos por separado desde PortalBI.tsx.
+ *
+ * El sufijo .global.css es lo que le dice a SPFx que esto NO es un CSS Module.
  */
-@import './tokens.css';
 
 html,
 body,

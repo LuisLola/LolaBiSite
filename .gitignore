@@ -8,7 +8,10 @@ spfx/node_modules/
 spfx/temp/
 spfx/dist/
 spfx/lib/
+spfx/lib-commonjs/
 spfx/release/
 spfx/sharepoint/solution/
+# Enlace a /src que necesita la cadena Heft. Lo crea `npm install` en /spfx.
+spfx/src/compartido
 # Grafo de conocimiento generado (graphify)
 graphify-out/

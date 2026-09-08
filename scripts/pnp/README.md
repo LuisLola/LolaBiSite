@@ -38,7 +38,7 @@ cd scripts\pnp
 .\1-Aprovisionar-Sitio.ps1          # sitio + 2 listas + columnas + vistas + permisos
 .\2-Migrar-Paneles.ps1 -Simular     # revisar la salida
 .\2-Migrar-Paneles.ps1              # aplicar
-# build de SPFx a mano (Node 18):  cd ..\..\spfx; nvm use 18; gulp bundle --ship; gulp package-solution --ship
+# build de SPFx a mano (Node 22):  cd ..\..\spfx; npm install; npm run build
 .\3-Desplegar-App.ps1 -ConfigurarPagina
 .\4-Publicar-Marca.ps1 -CrearLista   # una vez, para poder cambiar colores sin desplegar
 ```

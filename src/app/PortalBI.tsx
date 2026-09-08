@@ -5,7 +5,8 @@ import { EstadoPanelesProvider } from '../data/estadoPaneles';
 import { ServiciosProvider, type ServiciosPortal } from '../data/ServiciosProvider';
 import { AccesoProvider } from '../hooks/useAcceso';
 import { useTema, type CargarMarca } from '../tema/useTema';
-import '../ui/global.css';
+import '../ui/tokens.global.css';
+import '../ui/base.global.css';
 import { Rutas } from './Rutas';
 import { ConfiguracionProvider, type ConfiguracionPortal } from './configuracion';
 

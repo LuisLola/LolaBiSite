@@ -7,9 +7,9 @@
  *
  * Los tokens derivados (--primario-hover, --velo-modal, los --sobre-primario-*,
  * los tintes de chip) NO estan aqui a proposito: se calculan con color-mix() en
- * src/ui/tokens.css a partir de estos, asi que siguen a la marca solos.
+ * src/ui/tokens.global.css a partir de estos, asi que siguen a la marca solos.
  *
- * Los valores de aqui tienen que coincidir con el bloque BASE de tokens.css.
+ * Los valores de aqui tienen que coincidir con el bloque BASE de tokens.global.css.
  * tema.test.ts lo comprueba.
  *
  * Este fichero lo compilan las dos cadenas (Vite y SPFx con TS 4.7): TypeScript

@@ -5,15 +5,17 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 # --- Identidad de la app de PnP PowerShell -----------------------------------
-# Se obtiene UNA vez con el service account:
-#   Register-PnPEntraIDAppForInteractiveLogin -ApplicationName "PnP PowerShell LolaCasademunt" `
-#     -Tenant lolacasademunt.onmicrosoft.com -Interactive
-# El ClientId no es un secreto. Sin el, todo Connect-PnPOnline -Interactive
-# falla con AADSTS700016.
-$ClientIdPnP = $env:PNP_CLIENT_ID
+# La misma aplicacion de Entra que usa el repo de la intranet de SharePoint.
+#
+# No es un secreto: identifica la aplicacion, no autentica. La autenticacion es
+# interactiva (-Interactive), la hace la persona con su sesion.
+#
+# Se puede sobrescribir con la variable de entorno PNP_CLIENT_ID.
+$ClientIdPnP = if ($env:PNP_CLIENT_ID) { $env:PNP_CLIENT_ID } else { '9a1e5391-8317-4db1-b88e-75bb948e6ba8' }
 
 # --- Tenant ------------------------------------------------------------------
 $TenantId  = '52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70'
+$DominioTenant = 'lolacasademunt.onmicrosoft.com'
 $UrlTenant = 'https://lolacasademunt.sharepoint.com'
 $UrlAdmin  = 'https://lolacasademunt-admin.sharepoint.com'
 $UrlCatalogo = "$UrlTenant/sites/appcatalog"
@@ -80,33 +82,85 @@ $CamposDepartamentos = [ordered]@{
 $InternosPaneles = @('Title') + $CamposPaneles.Keys
 $InternosDepartamentos = @('Title') + $CamposDepartamentos.Keys
 
+# --- Mapeo de la lista de origen ---------------------------------------------
+# La lista de /sites/Operaciones NO usa los nombres internos del destino, asi
+# que hay que traducir. Comprobado en la lista real:
+#
+#   titulo visible      nombre interno   tipo
+#   Titulo              Title            Text
+#   Area de Trabajo     Departamento     User    <- ojo: es un campo de persona
+#   Url Panel           UrlPanel         URL
+#   Departamento        Departamento0    Choice
+#
+# El nombre interno "Departamento" del origen apunta a "Area de Trabajo", no al
+# departamento. Leerlo por el nombre del destino escribiria el nombre de una
+# persona en la columna de departamento.
+#
+# destino -> @{ origen; tipo }, donde tipo es texto | url | usuario.
+$MapaOrigen = [ordered]@{
+  'Title'                       = @{ origen = 'Title';         tipo = 'texto' }
+  'Area_x0020_de_x0020_Trabajo' = @{ origen = 'Departamento';  tipo = 'usuario' }
+  'Url_x0020_Panel'             = @{ origen = 'UrlPanel';      tipo = 'url' }
+  'Departamento'                = @{ origen = 'Departamento0'; tipo = 'texto' }
+}
+
 # --- Helpers -----------------------------------------------------------------
+
+# Conexiones ya abiertas en este proceso, por URL.
+$script:ConexionesPnP = @{}
 
 function Conectar {
   param([Parameter(Mandatory)][string]$Url)
 
-  if (-not $ClientIdPnP) {
-    throw "Falta el ClientId de PnP. Ejecuta Register-PnPEntraIDAppForInteractiveLogin y exporta PNP_CLIENT_ID (ver README)."
+  if ($script:ConexionesPnP.ContainsKey($Url)) { return $script:ConexionesPnP[$Url] }
+
+  $opciones = @{ Url = $Url; ClientId = $ClientIdPnP; ReturnConnection = $true }
+
+  if ($env:PNP_DEVICE_LOGIN -eq '1') {
+    # Para terminales que no pueden abrir un navegador (sesiones no
+    # interactivas): imprime un codigo y una URL en la consola. Sin esto,
+    # -Interactive se queda colgado esperando un navegador que nunca aparece.
+    $opciones['DeviceLogin'] = $true
+    $opciones['Tenant'] = $DominioTenant   # -DeviceLogin lo exige
+  } else {
+    $opciones['Interactive'] = $true
+    # -PersistLogin guarda la cache de token en disco. Sin el, cada proceso
+    # nuevo de PowerShell abre otra pestana para volver a iniciar sesion. Solo
+    # existe en PnP 3.x; el script de despliegue usa la 2.12.0 a proposito.
+    if ((Get-Command Connect-PnPOnline).Parameters.ContainsKey('PersistLogin')) {
+      $opciones['PersistLogin'] = $true
+    }
   }
+
   Write-Host "-> Conectando a $Url"
-  Connect-PnPOnline -Url $Url -ClientId $ClientIdPnP -Interactive -ReturnConnection
+  $conexion = Connect-PnPOnline @opciones
+  $script:ConexionesPnP[$Url] = $conexion
+  return $conexion
 }
 
 function Asegurar-Lista {
   param(
     [Parameter(Mandatory)]$Conexion,
     [Parameter(Mandatory)][string]$Titulo,
-    [Parameter(Mandatory)][string]$UrlInterna
+    [Parameter(Mandatory)][string]$UrlInterna,
+    # Para listas de configuracion que no deben ensuciar la navegacion del sitio
+    # (p. ej. "Marca LC" en la raiz de la intranet).
+    [switch]$SinQuickLaunch
   )
 
-  $lista = Get-PnPList -Identity $Titulo -Connection $Conexion
+  $lista = $null
+  try { $lista = Get-PnPList -Identity $Titulo -Connection $Conexion -ErrorAction Stop } catch {}
   if ($lista) {
     Write-Host "   = lista '$Titulo' ya existe"
     return $lista
   }
   # Se crea con el nombre limpio (deja /Lists/PanelesBI) y se renombra despues.
   Write-Host "   + creando lista '$Titulo' en /Lists/$UrlInterna"
-  New-PnPList -Title $UrlInterna -Template GenericList -OnQuickLaunch -Connection $Conexion | Out-Null
+  if ($SinQuickLaunch) {
+    New-PnPList -Title $UrlInterna -Template GenericList -Connection $Conexion | Out-Null
+  } else {
+    New-PnPList -Title $UrlInterna -Template GenericList -OnQuickLaunch -Connection $Conexion | Out-Null
+  }
   Set-PnPList -Identity $UrlInterna -Title $Titulo -Connection $Conexion | Out-Null
   Get-PnPList -Identity $Titulo -Connection $Conexion
 }
@@ -119,8 +173,11 @@ function Asegurar-Campo {
     [Parameter(Mandatory)][string]$Xml
   )
 
-  $existe = $null
-  try { $existe = Get-PnPField -List $Lista -Identity $Interno -Connection $Conexion -ErrorAction Stop } catch {}
+  # OJO: nunca usar -Identity para comprobar si existe. -Identity empareja
+  # tambien por titulo, y SharePoint trae campos internos ocultos cuyo titulo
+  # en espanol coincide con los nuestros ("Order" se llama "Orden"). Eso hacia
+  # que el campo se diera por creado y la columna no existiera nunca.
+  $existe = Get-PnPField -List $Lista -Connection $Conexion | Where-Object { $_.InternalName -ceq $Interno }
   if ($existe) {
     Write-Host "   = campo $Interno"
     return
@@ -148,11 +205,11 @@ function Comprobar-Campos {
     [Parameter(Mandatory)][string[]]$Esperados
   )
 
-  $faltan = @()
-  foreach ($interno in $Esperados) {
-    try { Get-PnPField -List $Lista -Identity $interno -Connection $Conexion -ErrorAction Stop | Out-Null }
-    catch { $faltan += $interno }
-  }
+  # Comparacion por nombre interno exacto y sensible a mayusculas. Con
+  # -Identity esta comprobacion no vale: empareja por titulo y da por buenos
+  # campos que no existen (ver el comentario de Asegurar-Campo).
+  $reales = (Get-PnPField -List $Lista -Connection $Conexion | ForEach-Object { $_.InternalName })
+  $faltan = @($Esperados | Where-Object { $reales -cnotcontains $_ })
   if ($faltan.Count -gt 0) {
     throw "La lista '$Lista' no tiene estos nombres internos: $($faltan -join ', '). El portal leeria esas columnas como vacias sin dar error. Arreglalo antes de seguir."
   }
@@ -170,6 +227,12 @@ function Asegurar-Miembro {
     Write-Host "   = '$LoginName' ya esta en '$Grupo'"
     return
   }
-  Write-Host "   + '$LoginName' -> '$Grupo'"
-  Add-PnPGroupMember -Identity $Grupo -LoginName $LoginName -Connection $Conexion | Out-Null
+  # No aborta el aprovisionamiento: si el grupo de M365 todavia no existe, las
+  # listas ya estan bien y el permiso se arregla a mano o re-ejecutando.
+  try {
+    Add-PnPGroupMember -Identity $Grupo -LoginName $LoginName -Connection $Conexion -ErrorAction Stop | Out-Null
+    Write-Host "   + '$LoginName' -> '$Grupo'"
+  } catch {
+    Write-Warning "No se ha podido anadir '$LoginName' a '$Grupo': $($_.Exception.Message)"
+  }
 }

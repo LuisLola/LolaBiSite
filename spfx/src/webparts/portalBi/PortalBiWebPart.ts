@@ -11,15 +11,15 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import * as strings from 'PortalBiWebPartStrings';
 
-import { PortalBI } from '../../../../src/app/PortalBI';
-import { URL_PAGINA_PORTAL, URL_SITIO_PORTAL } from '../../../../src/config/tenant.config';
-import type { ServiciosPortal } from '../../../../src/data/ServiciosProvider';
-import { IdentidadSharePoint } from '../../../../src/data/sharepoint/IdentidadSharePoint';
-import { MarcaRepository } from '../../../../src/data/sharepoint/MarcaRepository';
-import { SharePointDepartamentoRepository } from '../../../../src/data/sharepoint/SharePointDepartamentoRepository';
-import { SharePointPanelRepository } from '../../../../src/data/sharepoint/SharePointPanelRepository';
-import type { Tema } from '../../../../src/tema/tema';
-import { PortalEnModal } from '../../../../src/ui/PortalEnModal';
+import { PortalBI } from '../../compartido/app/PortalBI';
+import { URL_PAGINA_PORTAL, URL_SITIO_PORTAL } from '../../compartido/config/tenant.config';
+import type { ServiciosPortal } from '../../compartido/data/ServiciosProvider';
+import { IdentidadSharePoint } from '../../compartido/data/sharepoint/IdentidadSharePoint';
+import { MarcaRepository } from '../../compartido/data/sharepoint/MarcaRepository';
+import { SharePointDepartamentoRepository } from '../../compartido/data/sharepoint/SharePointDepartamentoRepository';
+import { SharePointPanelRepository } from '../../compartido/data/sharepoint/SharePointPanelRepository';
+import type { Tema } from '../../compartido/tema/tema';
+import { PortalEnModal } from '../../compartido/ui/PortalEnModal';
 
 export interface IPortalBiWebPartProps {
   titulo: string;

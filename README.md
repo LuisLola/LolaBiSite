@@ -187,7 +187,7 @@ ese color a 9px con borde inferior de 2px y cifras tabulares. Los primitivos
 estilo propio, sin degradados y sin azul de SharePoint.
 
 Ningún componente escribe un color a mano: todos salen de los tokens de
-`src/ui/tokens.css`, y hay un test que falla si alguien mete un hex en un CSS de
+`src/ui/tokens.global.css`, y hay un test que falla si alguien mete un hex en un CSS de
 módulo. Los colores corporativos se cambian **sin recompilar**, desde una lista
 de SharePoint; el hover, los velos y los tintes de los chips se derivan del color
 de marca con `color-mix()`, así que siguen al cambio solos. Cómo se toca eso está

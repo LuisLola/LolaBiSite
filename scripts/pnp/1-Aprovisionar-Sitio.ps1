@@ -43,13 +43,13 @@ if (-not $SoloComprobar) {
   Set-PnPList -Identity $ListaPaneles -EnableVersioning $true -MajorVersions 50 -Connection $portal | Out-Null
 
   # La vista por defecto se busca por la bandera, nunca por nombre (esta localizado).
+  # Las columnas van en -Fields: -Values @{ViewFields=...} no tiene setter y PnP
+  # lo ignora con un warning.
   $vista = Get-PnPView -List $ListaPaneles -Connection $portal | Where-Object { $_.DefaultView }
-  Set-PnPView -List $ListaPaneles -Identity $vista.Id -Connection $portal -Values @{
-    ViewFields = [string[]]@(
-      'Title', 'Departamento', 'Estado', 'Orden', 'Destacado',
-      'Responsable', 'HoraActualizacion', 'Url_x0020_Panel', 'Modified'
-    )
-  } | Out-Null
+  Set-PnPView -List $ListaPaneles -Identity $vista.Id -Connection $portal -Fields @(
+    'Title', 'Departamento', 'Estado', 'Orden', 'Destacado',
+    'Responsable', 'HoraActualizacion', 'Url_x0020_Panel', 'Modified'
+  ) | Out-Null
   Write-Host "   = vista por defecto ajustada"
 }
 Comprobar-Campos -Conexion $portal -Lista $ListaPaneles -Esperados $InternosPaneles
@@ -69,9 +69,9 @@ if (-not $SoloComprobar) {
   Set-PnPList -Identity $ListaDepartamentos -EnableVersioning $true -MajorVersions 50 -Connection $portal | Out-Null
 
   $vistaDep = Get-PnPView -List $ListaDepartamentos -Connection $portal | Where-Object { $_.DefaultView }
-  Set-PnPView -List $ListaDepartamentos -Identity $vistaDep.Id -Connection $portal -Values @{
-    ViewFields = [string[]]@('Title', 'Iniciales', 'Color', 'WorkspaceId', 'EquipoNombre', 'Modified')
-  } | Out-Null
+  Set-PnPView -List $ListaDepartamentos -Identity $vistaDep.Id -Connection $portal -Fields @(
+    'Title', 'Iniciales', 'Color', 'WorkspaceId', 'EquipoNombre', 'Modified'
+  ) | Out-Null
   Write-Host "   = vista por defecto ajustada"
 
   # Semilla: solo el nombre. Una celda vacia significa "usa el valor de

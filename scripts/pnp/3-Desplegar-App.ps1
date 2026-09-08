@@ -4,13 +4,24 @@
 #   .\3-Desplegar-App.ps1
 #   .\3-Desplegar-App.ps1 -ConfigurarPagina
 #
-# El build va antes y a mano, porque /spfx exige Node 18:
-#   cd spfx && nvm use 18 && npm install
-#   gulp bundle --ship && gulp package-solution --ship
+# El build va antes y a mano, porque /spfx exige Node 22 (SPFx 1.22.1, Heft):
+#   cd spfx; npm install; npm run build
 
 param(
   [switch]$ConfigurarPagina
 )
+
+# PnP.PowerShell 2.12.0 A PROPOSITO, no la 3.x.
+#
+# En la 3.x, Add-PnPApp termina sin error, devuelve null y NO sube nada: el
+# catalogo se queda igual y el script parece haber funcionado. El repo de la
+# intranet documenta lo mismo para la 3.1.0 (NullReferenceException), y fija la
+# 2.12.0 por esa razon.
+#
+# Instalarla:  Install-Module PnP.PowerShell -RequiredVersion 2.12.0 -Scope CurrentUser -AllowClobber
+Remove-Module PnP.PowerShell -Force -ErrorAction SilentlyContinue
+Import-Module PnP.PowerShell -RequiredVersion 2.12.0 -Force
+Write-Host "PnP.PowerShell $((Get-Module PnP.PowerShell).Version) (fijada: la 3.x no sube el paquete)"
 
 . "$PSScriptRoot\PortalBI.Comun.ps1"
 
@@ -19,7 +30,7 @@ $sppkg = Join-Path $raiz 'spfx\sharepoint\solution\portal-bi.sppkg'
 $solucion = Join-Path $raiz 'spfx\config\package-solution.json'
 
 if (-not (Test-Path $sppkg)) {
-  throw "No existe $sppkg. Ejecuta antes: cd spfx && nvm use 18 && gulp bundle --ship && gulp package-solution --ship"
+  throw "No existe $sppkg. Ejecuta antes: cd spfx; npm install; npm run build (con Node 22)"
 }
 if ((Get-Item $sppkg).LastWriteTime -lt (Get-Item $solucion).LastWriteTime) {
   throw "El .sppkg es mas viejo que package-solution.json. Vuelve a empaquetar antes de subirlo."
@@ -30,7 +41,17 @@ if ((Get-Item $sppkg).LastWriteTime -lt (Get-Item $solucion).LastWriteTime) {
 # publicarla. NO se llama a Install-PnPApp: con esa combinacion da error.
 $catalogo = Conectar $UrlCatalogo
 Write-Host "+ subiendo $(Split-Path $sppkg -Leaf)"
-Add-PnPApp -Path $sppkg -Scope Tenant -Publish -Overwrite -SkipFeatureDeployment -Connection $catalogo | Out-Null
+
+# En DOS pasos a proposito. Add-PnPApp con -Publish falla en PnP 3.x
+# ("appMetadata"), y el repo de la intranet documenta lo mismo con la 3.1.0
+# (NullReferenceException). Subir y publicar por separado si funciona.
+$app = Add-PnPApp -Path $sppkg -Scope Tenant -Overwrite -Connection $catalogo
+if (-not $app) { throw "Add-PnPApp no ha devuelto nada: el paquete no se ha subido. Comprueba la version de PnP.PowerShell." }
+Write-Host "   subido: $($app.Title)"
+
+# OJO: Publish-PnPApp de la 2.12.0 no acepta -Force.
+Publish-PnPApp -Identity $app.Id -Scope Tenant -SkipFeatureDeployment -Connection $catalogo | Out-Null
+Write-Host "   publicado en el catalogo de tenant"
 
 # --- 2. Permisos de Graph ----------------------------------------------------
 # Los declara spfx/config/package-solution.json (GroupMember.Read.All,
@@ -38,12 +59,27 @@ Add-PnPApp -Path $sppkg -Scope Tenant -Publish -Overwrite -SkipFeatureDeployment
 # grupos: [] -> nadie es administrador y no se ve ninguna area. Causa numero uno
 # de "el portal sale vacio".
 $admin = Conectar $UrlAdmin
-$concedidos = (Get-PnPTenantServicePrincipalPermissionGrants -Connection $admin | ForEach-Object { $_.Scope }) -join ' '
-$pendientes = Get-PnPTenantServicePrincipalPermissionRequest -Connection $admin |
-  Where-Object { $_.Resource -eq 'Microsoft Graph' -and $concedidos -notmatch [regex]::Escape($_.Scope) }
 
-if (-not $pendientes) {
-  Write-Host "= permisos de Graph ya concedidos"
+# Los scopes se leen del propio package-solution.json: asi esta lista y la que
+# pide la solucion no pueden divergir.
+$declarados = @(
+  (Get-Content $solucion -Raw | ForEach-Object { $_ -replace '(?m)^\s*//.*$', '' } | ConvertFrom-Json).solution.webApiPermissionRequests |
+    Where-Object { $_.resource -eq 'Microsoft Graph' } |
+    ForEach-Object { $_.scope }
+)
+Write-Host "   scopes declarados: $($declarados -join ', ')"
+
+# El cmdlet es PLURAL. El singular no existe y solo da "no se reconoce".
+# IMPORTANTE: se filtran los scopes de ESTA solucion. La lista de pendientes del
+# tenant trae peticiones de otras aplicaciones, y aprobarlas a ciegas concederia
+# permisos que nadie ha pedido.
+$pendientes = @(
+  Get-PnPTenantServicePrincipalPermissionRequests -Connection $admin |
+    Where-Object { $_.Resource -eq 'Microsoft Graph' -and $declarados -contains $_.Scope }
+)
+
+if ($pendientes.Count -eq 0) {
+  Write-Host "= sin peticiones pendientes (o ya concedidas)"
 } else {
   foreach ($peticion in $pendientes) {
     Write-Host "+ aprobando $($peticion.Scope)"
