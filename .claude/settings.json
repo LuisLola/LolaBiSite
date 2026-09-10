@@ -50,7 +50,24 @@
       "Bash(node -e ' *)",
       "mcp__claude_ai_Microsoft_365__teams_list_teams",
       "mcp__claude_ai_Microsoft_365__search_people",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(python -c ' *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\);console.log\\('scripts:',Object.keys\\(p.scripts||{}\\).join\\(', '\\)\\)\")",
+      "Bash(node -e \"console.log\\(JSON.stringify\\(require\\('./package.json'\\).scripts,null,2\\)\\)\")",
+      "Bash(command -v fnm)",
+      "Bash(fnm list *)",
+      "Bash(command -v nvm)",
+      "Bash(node -e \"const s=require\\('./spfx/config/package-solution.json'\\);console.log\\('version:',s.solution.version,'| id:',s.solution.id\\)\")",
+      "Bash(pwsh -NoProfile -Command \"if \\(Get-Module -ListAvailable -Name PnP.PowerShell\\) { \\(Get-Module -ListAvailable -Name PnP.PowerShell | Select-Object -First 1\\).Version.ToString\\(\\) } else { 'NO INSTALADO' }\")",
+      "Bash(PNP_DEVICE_LOGIN=1 pwsh -NoProfile -File ./1-Aprovisionar-Sitio.ps1)",
+      "Bash(PNP_DEVICE_LOGIN=1 pwsh -NoProfile -File \"C:/Users/STEFAN~1/AppData/Local/Temp/claude/c--Users-stefanychoez-OneDrive---Lola-Casademunt-S-L-Escritorio-Lolacasademunt-projects-LolaBiSite/e80368bd-038c-482a-8d86-4e4675371f3b/scratchpad/leer-marca.ps1\")",
+      "Bash(pwsh -NoProfile -File \"C:/Users/STEFAN~1/AppData/Local/Temp/claude/c--Users-stefanychoez-OneDrive---Lola-Casademunt-S-L-Escritorio-Lolacasademunt-projects-LolaBiSite/e80368bd-038c-482a-8d86-4e4675371f3b/scratchpad/leer-marca.ps1\")",
+      "Bash(pwsh -NoProfile -File ./5-Sincronizar-Marca.ps1 -Simular)",
+      "Bash(pwsh -NoProfile -File ./5-Sincronizar-Marca.ps1)",
+      "Bash(pwsh -NoProfile -File ./3-Desplegar-App.ps1)",
+      "Bash(pwsh -NoProfile -Command ' *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\stefanychoez\\.claude"

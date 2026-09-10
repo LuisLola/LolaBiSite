@@ -32,7 +32,7 @@ mundo tiene lectura ahí.
 
 - **Tema** (el `Title` de la lista): el nombre del tema
 - **Activo**: cuál está puesto. Solo uno a la vez, y lo gestiona la aplicación
-- **Una columna por token**: `primario`, `primario-texto`, `lienzo`… 34 en total
+- **Una columna por token**: `primario`, `primario-texto`, `lienzo`… 35 en total
 - **Nota**: para qué sirve el tema. Informativa, el portal no la lee
 
 ## Varios temas
@@ -69,6 +69,20 @@ cd scripts\pnp
 
 Eso la siembra con los valores actuales, así que arranca mostrando exactamente
 lo que ya se ve en pantalla.
+
+**Cuando el paquete trae tokens nuevos**, la lista ya existe y `-CrearLista`
+falla a propósito (y `-Recrear` la borraría, con lo que hubiera dentro). Para
+eso está el tercer camino, que añade lo que falte y deja el tema `Base` como lo
+trae el paquete, sin tocar los demás temas:
+
+```powershell
+.\5-Sincronizar-Marca.ps1 -Simular   # dice qué haría, no toca nada
+.\5-Sincronizar-Marca.ps1
+```
+
+Es el paso que hay que dar tras cada despliegue que añada o cambie tokens. Si
+se olvida, la lista sigue mandando y el portal se queda con los colores
+anteriores aunque el paquete nuevo esté publicado.
 
 Reglas:
 
