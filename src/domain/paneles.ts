@@ -63,6 +63,9 @@ export function agruparPorInforme(paneles: readonly Panel[]): GrupoInforme[] {
       titulo: tituloInforme(reportId, grupo),
       paneles: grupo,
     };
+    // Basta con que una de las paginas del informe traiga la pregunta escrita.
+    const pregunta = grupo.map((p) => p.pregunta?.trim()).find(Boolean);
+    if (pregunta) informe.pregunta = pregunta;
     const ws = workspaceDeInforme(reportId);
     if (ws) informe.workspaceId = ws;
     return informe;

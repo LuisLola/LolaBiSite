@@ -1,153 +1,147 @@
-import { BookOpen } from 'lucide-react';
-import { useMemo } from 'react';
+import { Info, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useConfiguracion } from '../../app/configuracion';
-import { ListaPaneles } from '../../components/ListaPaneles';
+import { useEstadoPaneles } from '../../data/estadoPaneles';
 import { agruparPorInforme } from '../../domain/paneles';
-import type { Panel } from '../../domain/types';
+import { urlAbrirPanel } from '../../domain/panelUrls';
+import type { Departamento } from '../../domain/types';
 import { useDepartamentosVisibles, usePanelesVisibles } from '../../hooks/useAcceso';
 import { useRecientes } from '../../hooks/useRecientes';
-import { Badge } from '../../ui/Badge';
-import { BotonEnlace } from '../../ui/Button';
-import { Card, CardCabecera, CardTitulo } from '../../ui/Card';
-import { SectionLabel } from '../../ui/SectionLabel';
-import { DepartamentoCard } from './DepartamentoCard';
-import { TarjetaDestacada, TarjetaNovedad } from './TarjetaDestacada';
+import { AvisoDeError, AvisoDeVacio } from '../../ui/AvisoDeCarga';
+import { estadoDeCarga } from '../../ui/estadoDeCarga';
+import { CommandPalette } from '../Buscador/CommandPalette';
+import { TarjetaPregunta, TarjetaSolicitud } from './TarjetaPregunta';
 import estilos from './HubPage.module.css';
 
-/** Destacado real si existe; si no, el primero por orden (marcado como sugerido). */
-function elegirDestacado(paneles: readonly Panel[]): { panel: Panel; marcado: boolean } | null {
-  const marcado = paneles.find((p) => p.destacado);
-  if (marcado) return { panel: marcado, marcado: true };
-  const primero = paneles[0];
-  return primero ? { panel: primero, marcado: false } : null;
-}
-
-/** Ultima incorporacion: por fecha de creacion si la hay, si no la ultima fila. */
-function elegirNovedad(paneles: readonly Panel[]): Panel | null {
-  const conFecha = paneles.filter((p) => p.creado);
-  if (conFecha.length > 0) {
-    return [...conFecha].sort((a, b) => (b.creado ?? '').localeCompare(a.creado ?? ''))[0] ?? null;
-  }
-  return paneles[paneles.length - 1] ?? null;
-}
-
 export function HubPage() {
-  const { titulo, subtitulo, urlGlosario } = useConfiguracion();
+  const { urlSolicitudes, contactoSoporte } = useConfiguracion();
   const { paneles, cargando } = usePanelesVisibles();
   const { departamentos } = useDepartamentosVisibles();
   const { paneles: recientes } = useRecientes();
+  const { error, recargar } = useEstadoPaneles();
+  const [buscadorAbierto, setBuscadorAbierto] = useState(false);
 
-  const porDepartamento = useMemo(() => {
-    const mapa = new Map<string, Panel[]>();
-    for (const panel of paneles) {
-      const lista = mapa.get(panel.departamento);
-      if (lista) lista.push(panel);
-      else mapa.set(panel.departamento, [panel]);
-    }
+  const informes = useMemo(() => agruparPorInforme(paneles), [paneles]);
+
+  const porNombre = useMemo(() => {
+    const mapa = new Map<string, Departamento>();
+    for (const departamento of departamentos) mapa.set(departamento.nombre, departamento);
     return mapa;
-  }, [paneles]);
+  }, [departamentos]);
 
-  const totalInformes = useMemo(() => agruparPorInforme(paneles).length, [paneles]);
-  const destacado = useMemo(() => elegirDestacado(paneles), [paneles]);
-  const novedad = useMemo(() => elegirNovedad(paneles), [paneles]);
+  const estado = estadoDeCarga({ cargando, error, total: paneles.length });
+
+  /*
+   * Un fallo de lectura y un portal sin nada asignado producen la misma pantalla
+   * vacia, y son problemas de personas distintas. Se separan antes de pintar
+   * nada: el resto de la portada no tiene sentido en ninguno de los dos casos.
+   */
+  if (estado === 'error') {
+    return (
+      <div className={estilos.pagina}>
+        <AvisoDeError error={error} reintentar={() => void recargar()} contacto={contactoSoporte} />
+      </div>
+    );
+  }
+
+  if (estado === 'vacio') {
+    return (
+      <div className={estilos.pagina}>
+        <AvisoDeVacio contacto={contactoSoporte} />
+      </div>
+    );
+  }
 
   return (
     <div className={estilos.pagina}>
-      <section className={estilos.heroe}>
-        <div>
-          <span className={estilos.heroeMarca}>Lola Casademunt · {titulo}</span>
-          <h1 className={estilos.heroeTitulo}>Los paneles de la casa, ordenados por departamento.</h1>
-          <p className={estilos.heroeTexto}>{subtitulo}</p>
-          <div className={estilos.heroeCifras}>
-            <span className={estilos.cifra}>
-              <span className={estilos.cifraValor}>{paneles.length}</span>
-              <span className={estilos.cifraEtiqueta}>Paneles</span>
-            </span>
-            <span className={estilos.cifra}>
-              <span className={estilos.cifraValor}>{totalInformes}</span>
-              <span className={estilos.cifraEtiqueta}>Informes</span>
-            </span>
-            <span className={estilos.cifra}>
-              <span className={estilos.cifraValor}>{departamentos.length}</span>
-              <span className={estilos.cifraEtiqueta}>Departamentos</span>
-            </span>
-          </div>
-        </div>
+      <div className={estilos.banda}>
+        <Info className={estilos.bandaIcono} size={28} strokeWidth={1.75} aria-hidden="true" />
+        <p className={estilos.bandaTexto}>
+          <strong>Estás en el portal de informes.</strong> Pregunta lo que quieras saber y te llevamos al
+          informe que lo responde. Los datos se actualizan solos cada mañana.
+        </p>
+      </div>
 
+      <section className={estilos.entrada}>
+        <h1 className={estilos.titular}>¿Qué quieres mirar?</h1>
+
+        <button type="button" className={estilos.buscador} onClick={() => setBuscadorAbierto(true)}>
+          <Search className={estilos.buscadorIcono} size={26} strokeWidth={1.75} aria-hidden="true" />
+          ventas, almacén, transportes, temporada…
+        </button>
+
+        <p className={estilos.nota}>
+          O elige una de las preguntas de abajo. Todo se abre en Power BI y te pedirá tu cuenta de Microsoft
+          del trabajo: es normal.
+        </p>
       </section>
 
-      <section className={estilos.estado} aria-label="Estado de los datos">
-        <SectionLabel>Estado de los datos</SectionLabel>
-        <div className={estilos.estadoItems}>
+      <section className={estilos.seccion}>
+        <div className={estilos.seccionCabecera}>
+          <h2 className={estilos.seccionTitulo}>Las preguntas que más se hacen aquí</h2>
+          <p className={estilos.seccionNota}>
+            {cargando
+              ? 'Buscando lo que puedes ver…'
+              : 'Cada una abre el informe que la responde. Solo salen las de tus equipos.'}
+          </p>
+        </div>
+
+        <div className={estilos.rejilla}>
+          {informes.map((informe) => (
+            <TarjetaPregunta
+              key={informe.reportId}
+              informe={informe}
+              departamento={porNombre.get(informe.paneles[0]?.departamento ?? '')}
+            />
+          ))}
+          {urlSolicitudes ? <TarjetaSolicitud url={urlSolicitudes} contacto={contactoSoporte} /> : null}
+        </div>
+      </section>
+
+      {recientes.length > 0 ? (
+        <section className={estilos.seccion}>
+          <div className={estilos.seccionCabecera}>
+            <h2 className={estilos.seccionTitulo}>Los últimos que has abierto</h2>
+            <p className={estilos.seccionNota}>Se guardan solo en este ordenador.</p>
+          </div>
+          <div className={estilos.fila}>
+            {recientes.map((panel) => (
+              <a
+                key={panel.id}
+                className={estilos.reciente}
+                href={urlAbrirPanel(panel)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span
+                  className={estilos.punto}
+                  style={{ background: porNombre.get(panel.departamento)?.color ?? 'var(--primario)' }}
+                  aria-hidden="true"
+                />
+                {panel.nombre}
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section className={estilos.seccion}>
+        <h2 className={estilos.seccionTitulo}>O búscalo por departamento</h2>
+        <div className={estilos.fila}>
           {departamentos.map((departamento) => (
-            <Link key={departamento.id} to={`/departamento/${departamento.id}`} className={estilos.estadoItem}>
-              <span className={estilos.estadoPunto} style={{ background: departamento.color }} aria-hidden="true" />
+            <Link key={departamento.id} className={estilos.area} to={`/departamento/${departamento.id}`}>
+              <span className={estilos.punto} style={{ background: departamento.color }} aria-hidden="true" />
               {departamento.nombre}
-              <span className={estilos.estadoHora}>
-                {departamento.horaActualizacion ?? 'sin hora'} · {departamento.totalPaneles}
+              <span className={estilos.areaCuenta}>
+                {departamento.totalInformes === 1 ? '1 informe' : `${departamento.totalInformes} informes`}
               </span>
             </Link>
           ))}
         </div>
-        <span className={estilos.estadoNota}>Horas declaradas por área, no monitorizadas.</span>
       </section>
 
-      <div className={estilos.cuerpo}>
-        <div className={estilos.principal}>
-          <div className={estilos.duo}>
-            {destacado ? <TarjetaDestacada panel={destacado.panel} marcado={destacado.marcado} /> : null}
-            {novedad ? <TarjetaNovedad panel={novedad} total={paneles.length} /> : null}
-          </div>
-
-          <section className={estilos.seccion}>
-            <div className={estilos.seccionCabecera}>
-              <SectionLabel>Departamentos</SectionLabel>
-              <span className={estilos.seccionNota}>
-                {cargando ? 'Cargando…' : `${departamentos.length} áreas con paneles publicados`}
-              </span>
-            </div>
-            <div className={estilos.rejillaAreas}>
-              {departamentos.map((departamento) => (
-                <DepartamentoCard
-                  key={departamento.id}
-                  departamento={departamento}
-                  paneles={porDepartamento.get(departamento.nombre) ?? []}
-                  informes={departamento.totalInformes}
-                />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        <aside className={estilos.columnaDerecha}>
-          <Card compacta>
-            <CardCabecera>
-              <CardTitulo>Mis paneles</CardTitulo>
-              <Badge>{recientes.length}</Badge>
-            </CardCabecera>
-            <ListaPaneles
-              paneles={recientes}
-              vacio="Aquí aparecerán los últimos paneles que abras."
-              mostrarDepartamento
-            />
-          </Card>
-
-          <Card compacta>
-            <CardCabecera>
-              <CardTitulo>Novedades</CardTitulo>
-            </CardCabecera>
-            <ListaPaneles paneles={paneles.slice(-3).reverse()} mostrarDepartamento />
-          </Card>
-
-          <div className={estilos.acciones}>
-            <BotonEnlace a={urlGlosario} externo variante="secundario" anchoCompleto>
-              <BookOpen size={14} strokeWidth={1.75} />
-              Glosario
-            </BotonEnlace>
-          </div>
-        </aside>
-      </div>
+      {buscadorAbierto ? <CommandPalette alCerrar={() => setBuscadorAbierto(false)} /> : null}
     </div>
   );
 }

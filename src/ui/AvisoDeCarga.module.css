@@ -1,0 +1,53 @@
+.aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+  flex-wrap: wrap;
+}
+
+.icono {
+  color: var(--primario);
+  flex: none;
+}
+
+.textos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.titulo {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/*
+ * 15px y --texto-secundario, no los 12px y --texto-terciario del resto de notas:
+ * este es justo el texto que tiene que leer alguien que ya esta perdido.
+ */
+.cuerpo {
+  max-width: 70ch;
+  font-size: 15px;
+  color: var(--texto-secundario);
+}
+
+.detalle {
+  font-size: 13px;
+  color: var(--texto-secundario);
+}
+
+.detalle summary {
+  cursor: pointer;
+}
+
+.detalleTexto {
+  margin-top: var(--espacio-2);
+  padding: var(--espacio-3);
+  border-radius: var(--radio-boton);
+  background: var(--papel);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  word-break: break-word;
+}

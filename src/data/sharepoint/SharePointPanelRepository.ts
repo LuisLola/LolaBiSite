@@ -124,6 +124,7 @@ export class SharePointPanelRepository implements PanelRepository {
         urlPanel: textoDeHipervinculo(elemento[CAMPOS.urlPanel]),
         urlDirecta: textoDeHipervinculo(elemento[CAMPOS.urlDirecta]),
         departamento: texto(elemento[CAMPOS.departamento]),
+        pregunta: texto(elemento[CAMPOS.pregunta]),
         descripcion: texto(elemento[CAMPOS.descripcion]),
         responsable: texto(elemento[CAMPOS.responsable]),
         grupoAcceso: texto(elemento[CAMPOS.grupoAcceso]),
@@ -149,6 +150,7 @@ export class SharePointPanelRepository implements PanelRepository {
       elemento[CAMPOS.urlDirecta] = { Url: cambios.urlDirecta, Description: cambios.nombre ?? 'Abrir' };
     }
     if (cambios.departamento !== undefined) elemento[CAMPOS.departamento] = cambios.departamento;
+    if (cambios.pregunta !== undefined) elemento[CAMPOS.pregunta] = cambios.pregunta;
     if (cambios.descripcion !== undefined) elemento[CAMPOS.descripcion] = cambios.descripcion;
     if (cambios.responsable !== undefined) elemento[CAMPOS.responsable] = cambios.responsable;
     if (cambios.grupoAcceso !== undefined) elemento[CAMPOS.grupoAcceso] = cambios.grupoAcceso;

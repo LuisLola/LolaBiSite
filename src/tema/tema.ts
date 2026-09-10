@@ -16,13 +16,21 @@
  * plano, sin imports de @microsoft/* y sin sintaxis posterior a 4.7.
  */
 
+/**
+ * Valor del token `logo` cuando no hay logo puesto. La barra superior lo mira
+ * para decidir entre la imagen y el sello "LC" de texto.
+ */
+export const SIN_LOGO = 'none';
+
 export const TOKENS = [
   // Marca
   'primario',
   'primario-texto',
+  'primario-suave',
   'acento',
   'lila',
   'azul',
+  'logo',
   // Estado
   'positivo',
   'negativo',
@@ -44,6 +52,8 @@ export const TOKENS = [
   'radio-tarjeta',
   'radio-boton',
   'radio-chip',
+  'radio-expresivo',
+  'radio-pildora',
   // Ritmo
   'espacio-1',
   'espacio-2',
@@ -63,30 +73,34 @@ export type Tema = Record<TokenTema, string>;
 export const TEMA_DEFECTO: Tema = {
   primario: '#6f263d',
   'primario-texto': '#fff6ed',
+  'primario-suave': '#ffd9e0',
   acento: '#dfa0c9',
   lila: '#b4b5df',
   azul: '#10069f',
+  logo: SIN_LOGO,
 
   positivo: '#0f7a63',
   negativo: '#ba1c43',
   alerta: '#ff5948',
   'aviso-texto': '#8a4b00',
 
-  lienzo: '#fff6ed',
-  papel: '#f3ece4',
+  lienzo: '#fff8f7',
+  papel: '#f5e4e6',
   tarjeta: '#ffffff',
-  'borde-tarjeta': '#e7dace',
-  divisor: '#f2e9de',
-  'divisor-fuerte': '#e0d3c6',
-  'fila-alterna': '#fcf8f3',
+  'borde-tarjeta': '#e6d8db',
+  divisor: '#f2e4e6',
+  'divisor-fuerte': '#d6c2c5',
+  'fila-alterna': '#fdf6f7',
 
-  texto: '#1a1416',
-  'texto-secundario': '#6b5c60',
-  'texto-terciario': '#8c7e82',
+  texto: '#22191b',
+  'texto-secundario': '#5c4f52',
+  'texto-terciario': '#6b5c5f',
 
   'radio-tarjeta': '8px',
   'radio-boton': '6px',
   'radio-chip': '4px',
+  'radio-expresivo': '28px',
+  'radio-pildora': '999px',
 
   'espacio-1': '4px',
   'espacio-2': '8px',
@@ -96,7 +110,7 @@ export const TEMA_DEFECTO: Tema = {
   'espacio-6': '32px',
   'espacio-7': '48px',
 
-  fuente: "'Montserrat Variable', 'Montserrat', 'Segoe UI', system-ui, sans-serif",
+  fuente: "'Roboto Flex Variable', 'Roboto Flex', 'Segoe UI', system-ui, sans-serif",
   'ancho-maximo': '1680px',
 };
 
@@ -149,6 +163,13 @@ const COLOR_HEX = /^#[0-9a-f]{3,8}$/i;
 const COLOR_FUNCION = /^(rgb|rgba|hsl|hsla)\(\s*[\d\s.,%/]+\)$/i;
 const COLOR_VAR = /^var\(--[a-z0-9-]+\)$/i;
 const FUENTE = /^[\w\s',-]+$/;
+/*
+ * El logo es lo unico del tema que apunta fuera: acaba en un background-image,
+ * asi que se exige la forma completa url("https://…") y solo caracteres validos
+ * de URL. Sin parentesis, comillas ni punto y coma dentro no hay forma de que
+ * el valor se escape de la declaracion. Se acepta ademas SIN_LOGO.
+ */
+const LOGO = /^url\("https:\/\/[a-z0-9.-]+\/[a-z0-9._~%/-]*"\)$/i;
 
 /**
  * Un valor del tema acaba dentro de un <style>: es una frontera de confianza.
@@ -169,9 +190,11 @@ export function sanearTema(bruto: Readonly<Record<string, unknown>>): Partial<Te
     const valido =
       clave === 'fuente'
         ? FUENTE.test(valor)
-        : clave.indexOf('radio-') === 0 || clave.indexOf('espacio-') === 0 || clave.indexOf('ancho-') === 0
-          ? LONGITUD.test(valor)
-          : COLOR_HEX.test(valor) || COLOR_FUNCION.test(valor) || COLOR_VAR.test(valor);
+        : clave === 'logo'
+          ? valor === SIN_LOGO || LOGO.test(valor)
+          : clave.indexOf('radio-') === 0 || clave.indexOf('espacio-') === 0 || clave.indexOf('ancho-') === 0
+            ? LONGITUD.test(valor)
+            : COLOR_HEX.test(valor) || COLOR_FUNCION.test(valor) || COLOR_VAR.test(valor);
 
     if (!valido) {
       console.warn(`[Portal BI] Valor de tema descartado: ${clave} = "${valor}"`);

@@ -34,8 +34,8 @@ export interface IPortalBiWebPartProps {
   textoBoton: string;
 }
 
-const FUENTE_MONTSERRAT =
-  'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap';
+const FUENTE_ROBOTO_FLEX =
+  'https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&display=swap';
 
 /**
  * Fase 2. El web part no duplica interfaz: monta <PortalBI /> de /src y le
@@ -48,9 +48,9 @@ export default class PortalBiWebPart extends BaseClientSideWebPart<IPortalBiWebP
   private marca?: MarcaRepository;
 
   protected onInit(): Promise<void> {
-    // Montserrat: si el tenant bloquea Google Fonts, sustituye esta carga por
-    // el paquete @fontsource-variable/montserrat empaquetado en la solucion.
-    SPComponentLoader.loadCss(FUENTE_MONTSERRAT);
+    // Roboto Flex: si el tenant bloquea Google Fonts, sustituye esta carga por
+    // el paquete @fontsource-variable/roboto-flex empaquetado en la solucion.
+    SPComponentLoader.loadCss(FUENTE_ROBOTO_FLEX);
     return super.onInit();
   }
 

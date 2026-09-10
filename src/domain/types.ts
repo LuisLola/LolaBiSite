@@ -26,6 +26,12 @@ export interface Panel {
   /** Override manual de la URL de apertura. Vacio = se deriva. */
   urlDirecta?: string;
   departamento: string;
+  /**
+   * La pregunta que responde el informe, escrita como la haria un empleado:
+   * "¿Cómo van las ventas de tienda y online?". Es el titulo que se ve en la
+   * portada. Vacia, la portada cae al nombre.
+   */
+  pregunta?: string;
   descripcion?: string;
   responsable?: string;
   /** Override: restringe el panel a un grupo mas estrecho que el del area. */
@@ -76,6 +82,8 @@ export interface GrupoInforme {
   reportId: string;
   /** Nombre comun deducido de los titulos de sus paginas. */
   titulo: string;
+  /** La pregunta que responde, si alguna de sus paginas la trae escrita. */
+  pregunta?: string;
   paneles: Panel[];
   workspaceId?: string;
 }

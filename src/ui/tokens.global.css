@@ -24,9 +24,24 @@
   /* Marca */
   --primario: #6f263d;
   --primario-texto: #fff6ed;
+  /*
+   * Relleno rosa de las tarjetas de la portada: el tono 90 del burdeos segun
+   * Material 3. Es un color de marca, no un estado, y por eso es editable: si
+   * cambia --primario hay que traer su tono 90 aqui, no se calcula solo.
+   */
+  --primario-suave: #ffd9e0;
   --acento: #dfa0c9;
   --lila: #b4b5df;
   --azul: #10069f;
+  /*
+   * Logo de la barra superior. "none" = sin logo, y la barra cae en el sello
+   * "LC" dibujado con texto. Para poner el logo de verdad, la celda de la lista
+   * "Marca LC" lleva un url() a una imagen de SiteAssets del sitio raiz:
+   *   url("https://lolacasademunt.sharepoint.com/SiteAssets/logo-lola-monograma.png")
+   * Se queda en "none" aqui a proposito: el paquete no lleva ninguna imagen
+   * dentro, asi que cambiar de logo no obliga a volver a desplegar el .sppkg.
+   */
+  --logo: none;
 
   /* Estado */
   --positivo: #0f7a63;
@@ -34,24 +49,36 @@
   --alerta: #ff5948;
   --aviso-texto: #8a4b00;
 
-  /* Superficies */
-  --lienzo: #fff6ed;
-  --papel: #f3ece4;
+  /*
+   * Superficies. Todas rosadas, derivadas del burdeos: es lo que hace que el
+   * portal se lea como Lola Casademunt aunque el burdeos solo salga en los
+   * botones. El blanco de las tarjetas destaca sobre ellas sin necesidad de
+   * sombra.
+   */
+  --lienzo: #fff8f7;
+  --papel: #f5e4e6;
   --tarjeta: #ffffff;
-  --borde-tarjeta: #e7dace;
-  --divisor: #f2e9de;
-  --divisor-fuerte: #e0d3c6;
-  --fila-alterna: #fcf8f3;
+  --borde-tarjeta: #e6d8db;
+  --divisor: #f2e4e6;
+  --divisor-fuerte: #d6c2c5;
+  --fila-alterna: #fdf6f7;
 
   /* Texto */
-  --texto: #1a1416;
-  --texto-secundario: #6b5c60;
-  --texto-terciario: #8c7e82;
+  --texto: #22191b;
+  --texto-secundario: #5c4f52;
+  --texto-terciario: #6b5c5f;
 
-  /* Forma */
+  /*
+   * Forma. Dos mundos a proposito: la portada usa --radio-expresivo y
+   * --radio-pildora, que invitan a entrar; las pantallas de trabajo usan
+   * --radio-tarjeta y --radio-boton, que se dejan usar. Mezclarlos es lo que
+   * hace que una tabla parezca un juguete.
+   */
   --radio-tarjeta: 8px;
   --radio-boton: 6px;
   --radio-chip: 4px;
+  --radio-expresivo: 28px;
+  --radio-pildora: 999px;
 
   /* Ritmo */
   --espacio-1: 4px;
@@ -63,13 +90,20 @@
   --espacio-7: 48px;
 
   /* Tipografia y ancho */
-  --fuente: 'Montserrat Variable', 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+  --fuente: 'Roboto Flex Variable', 'Roboto Flex', 'Segoe UI', system-ui, sans-serif;
   --ancho-maximo: 1680px;
 
   /* ---------- DERIVADOS: no editar ---------- */
 
   /* Interaccion sobre el color de marca */
   --primario-hover: color-mix(in srgb, var(--primario) 83%, black);
+
+  /*
+   * Texto sobre --primario-suave (el rosa claro). Ojo con el nombre: los
+   * --sobre-primario-* de mas abajo van sobre el burdeos MACIZO y son claros.
+   * Este va sobre el rosa y es oscuro.
+   */
+  --texto-sobre-suave: color-mix(in srgb, var(--primario) 82%, var(--texto));
 
   /* Velo y sombra de los modales */
   --velo-modal: color-mix(in srgb, var(--texto) 38%, transparent);

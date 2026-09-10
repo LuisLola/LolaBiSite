@@ -15,4 +15,6 @@ spfx/sharepoint/solution/
 spfx/src/compartido
 # Grafo de conocimiento generado (graphify)
 graphify-out/
+# Cache de la herramienta de critica de diseno (impeccable)
+.impeccable/
 spfx/jest-output/

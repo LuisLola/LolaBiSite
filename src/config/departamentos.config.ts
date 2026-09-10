@@ -55,7 +55,10 @@ export const DEPARTAMENTOS_CONFIG: Record<string, DepartamentoConfig> = {
   },
   Multimarca: {
     iniciales: 'MM',
-    color: 'var(--negativo)',
+    // --negativo es el rojo de ERROR: un departamento entero pintado con el
+    // decia "algo va mal" cada vez que salia. --azul estaba declarado y sin
+    // usar, y es el otro color de MARCA LC.
+    color: 'var(--azul)',
     colorTexto: 'var(--primario-texto)',
     descripcion:
       'Canal mayorista y multimarca: servicio de temporada, ranking de producto y plan de servicio B2B.',

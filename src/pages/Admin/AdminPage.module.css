@@ -13,15 +13,15 @@
 }
 
 .titulo {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .subtitulo {
   margin-top: var(--espacio-2);
-  max-width: 72ch;
-  font-size: 13px;
+  max-width: 84ch;
+  font-size: 15px;
   color: var(--texto-secundario);
 }
 
@@ -54,9 +54,35 @@
 
 .resumenFiltro {
   margin-left: auto;
-  font-size: 11px;
-  color: var(--texto-terciario);
+  font-size: 14px;
+  color: var(--texto-secundario);
   font-variant-numeric: tabular-nums;
+}
+
+/*
+ * La franja de arriba. Solo el aviso mas grave, en una frase, con lo que hay
+ * que hacer al final. El desglose completo se queda en la tarjeta de abajo:
+ * primero se sabe que hacer, luego se puede mirar el detalle.
+ */
+.franjaAviso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 1px solid var(--aviso-borde);
+  border-radius: var(--radio-tarjeta);
+  background: var(--aviso-fondo);
+  font-size: 15px;
+  color: var(--texto);
+}
+
+.franjaAvisoIcono {
+  flex: none;
+  color: var(--aviso-texto);
+}
+
+.franjaAvisoTexto {
+  flex-grow: 1;
 }
 
 .avisos {
@@ -69,9 +95,9 @@
   display: flex;
   align-items: center;
   gap: var(--espacio-3);
-  padding: 7px 0;
+  padding: var(--espacio-2) 0;
   border-bottom: 1px solid var(--divisor);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--texto-secundario);
 }
 
@@ -91,7 +117,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 208px;
+  min-width: 280px;
 }
 
 .celdaEstado {
@@ -106,7 +132,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radio-boton);
   color: var(--texto-secundario);
 }
@@ -120,19 +147,25 @@
   font-weight: 600;
 }
 
+/*
+ * El identificador tecnico, en una sola linea. Antes se partia en dos y hacia
+ * la fila mas alta que su propio contenido util.
+ */
 .nombreMeta {
-  font-size: 10px;
-  letter-spacing: 0.04em;
+  font-size: 12px;
   color: var(--texto-terciario);
-  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .celdaOrden {
-  width: 62px;
+  width: 84px;
 }
 
+/* El campo de hora del navegador trae su propio reloj: necesita mas sitio. */
 .celdaHora {
-  width: 74px;
+  width: 112px;
 }
 
 .celdaTexto {
@@ -186,8 +219,8 @@ table.tablaAdmin thead th {
   align-items: center;
   gap: var(--espacio-4);
   flex-wrap: wrap;
-  font-size: 11px;
-  color: var(--texto-terciario);
+  font-size: 13px;
+  color: var(--texto-secundario);
 }
 
 .mensaje {
@@ -195,7 +228,7 @@ table.tablaAdmin thead th {
   border: 1px solid var(--borde-total);
   border-radius: var(--radio-tarjeta);
   background: var(--fila-total);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--texto-secundario);
 }
 

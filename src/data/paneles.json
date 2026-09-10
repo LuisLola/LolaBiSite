@@ -3,54 +3,63 @@
     "Título": "LC - Desempeño de ventas",
     "Area de Trabajo": "Integrantes de la Operaciones",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=5f662917-4305-4545-bd15-7a9d55c155a5&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=94444b40d96605bad7e4&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Retail-Online"
+    "Departamento": "Retail-Online",
+    "Pregunta": "¿Cómo van las ventas de tienda y online?"
   },
   {
     "Título": "LC - Ranking por Temporada",
     "Area de Trabajo": "Integrantes de la Operaciones",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=5f662917-4305-4545-bd15-7a9d55c155a5&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=a4c82d91b06e359cbdd5&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Retail-Online"
+    "Departamento": "Retail-Online",
+    "Pregunta": "¿Cómo van las ventas de tienda y online?"
   },
   {
     "Título": "LC - Comparación Temporada Seleccionada",
     "Area de Trabajo": "Integrantes de la Operaciones",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=5f662917-4305-4545-bd15-7a9d55c155a5&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=176ae7a51d90993cae5e&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Retail-Online"
+    "Departamento": "Retail-Online",
+    "Pregunta": "¿Cómo van las ventas de tienda y online?"
   },
   {
     "Título": "LC - Analisis Servicio Temporada",
     "Area de Trabajo": "Integrantes de la Operaciones",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=a04a0571-f32d-4e68-93c5-8bd9dfdc8541&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=ae2d803c570e5bf27f6e&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Multimarca"
+    "Departamento": "Multimarca",
+    "Pregunta": "¿Estamos sirviendo bien a multimarca?"
   },
   {
     "Título": "LC - Rankings Producto",
     "Area de Trabajo": "Integrantes de la Operaciones",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=a04a0571-f32d-4e68-93c5-8bd9dfdc8541&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=e2e768671c6e226314f1&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Multimarca"
+    "Departamento": "Multimarca",
+    "Pregunta": "¿Estamos sirviendo bien a multimarca?"
   },
   {
     "Título": "LC - Analisis Temporada",
     "Area de Trabajo": "Luis Díaz",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=a04a0571-f32d-4e68-93c5-8bd9dfdc8541&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=29e357fa2a7af56d6aeb&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Multimarca"
+    "Departamento": "Multimarca",
+    "Pregunta": "¿Estamos sirviendo bien a multimarca?"
   },
   {
     "Título": "LC - Analisis Transportes",
     "Area de Trabajo": "Luis Díaz",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=570f590b-4ff6-4744-b343-1f26b2ca98a4&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=7cc1f0f314a55003c8ad&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Logistica"
+    "Departamento": "Logistica",
+    "Pregunta": "¿Cómo van los transportes?"
   },
   {
     "Título": "Plan de Servicio B2B",
     "Area de Trabajo": "Luis Díaz",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=7bab0370-b1ec-4fb1-a92f-1a32bfcb047b&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=2ceb28fea7f7a86a18f9&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Multimarca"
+    "Departamento": "Multimarca",
+    "Pregunta": "¿Cumplimos el plan con los mayoristas?"
   },
   {
     "Título": "LC - Previsión Entradas y Salidas Almacén",
     "Area de Trabajo": "Luis Díaz",
     "Url Panel": "https://app.powerbi.com/reportEmbed?reportId=8eabaadf-5e43-41b4-a97a-4460dfcb90e5&autoAuth=true&ctid=52dfd00a-ad1b-4688-8b88-c8cb5c7b1a70&pageName=6a204ca8d540fad7efa0&navContentPaneEnabled=false&filterPaneEnabled=false",
-    "Departamento": "Logistica"
+    "Departamento": "Logistica",
+    "Pregunta": "¿Qué entra y sale del almacén?"
   }
 ]

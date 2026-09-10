@@ -3,12 +3,17 @@
   background: var(--lienzo);
 }
 
+/*
+ * La barra es lo unico que se repite igual en todas las pantallas, portada y
+ * administracion incluidas: es lo que las mantiene en la misma casa aunque el
+ * resto de cada una use formas distintas. Por eso aqui, y solo aqui, se usan
+ * pildoras en las pantallas de trabajo.
+ */
 .barra {
   position: sticky;
   top: 0;
   z-index: 20;
   background: var(--lienzo);
-  border-bottom: 1px solid var(--divisor-fuerte);
 }
 
 /*
@@ -22,13 +27,13 @@
   gap: var(--espacio-5);
   max-width: var(--ancho-maximo);
   margin: 0 auto;
-  padding: var(--espacio-3) clamp(var(--espacio-4), 3vw, var(--espacio-7));
+  padding: var(--espacio-4) clamp(var(--espacio-4), 3vw, var(--espacio-7));
 }
 
 .marca {
   display: flex;
   align-items: center;
-  gap: var(--espacio-3);
+  gap: var(--espacio-4);
   color: var(--texto);
   text-decoration: none;
   flex: none;
@@ -40,35 +45,39 @@
 
 .marcaNombre {
   display: block;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 2.4px;
-  text-transform: uppercase;
-  line-height: 1;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 28px;
 }
 
-.marcaSub {
+/*
+ * El logo es una imagen de la lista "Marca LC", de proporcion desconocida: se
+ * fija el alto y se deja crecer el ancho hasta un tope, con contain para no
+ * deformarlo nunca. Sin logo puesto se pinta .sello en su lugar.
+ */
+.logo {
   display: block;
-  margin-top: 3px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--texto-terciario);
-  line-height: 1;
+  width: 100%;
+  max-width: 132px;
+  height: 40px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  flex: none;
 }
 
 .sello {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radio-boton);
   background: var(--primario);
   color: var(--primario-texto);
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.5px;
   flex: none;
 }
@@ -76,27 +85,33 @@
 .navegacion {
   display: flex;
   align-items: center;
-  gap: var(--espacio-1);
+  gap: var(--espacio-2);
 }
 
 .enlaceNav {
-  padding: 5px 10px;
-  border-radius: var(--radio-boton);
-  font-size: 12px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 var(--espacio-5);
+  border-radius: var(--radio-pildora);
+  font-size: 15px;
+  font-weight: 500;
   color: var(--texto-secundario);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .enlaceNav:hover {
-  color: var(--primario);
-  background: var(--fila-total);
+  color: var(--texto);
+  background: var(--papel);
   text-decoration: none;
 }
 
-.enlaceNavActivo {
-  color: var(--primario);
-  background: var(--fila-total);
+.enlaceNavActivo,
+.enlaceNavActivo:hover {
+  background: var(--primario);
+  color: var(--primario-texto);
+  font-weight: 600;
 }
 
 .derecha {
@@ -109,30 +124,59 @@
 .atajo {
   display: inline-flex;
   align-items: center;
-  gap: var(--espacio-2);
-  padding: 6px 10px 6px 9px;
-  min-width: 200px;
-  border: 1px solid var(--divisor-fuerte);
-  border-radius: var(--radio-boton);
-  background: var(--tarjeta);
-  color: var(--texto-terciario);
-  font-size: 12px;
+  gap: var(--espacio-3);
+  height: 48px;
+  min-width: 232px;
+  padding: 0 var(--espacio-5);
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  color: var(--texto-secundario);
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   text-align: left;
 }
 
 .atajo:hover {
-  border-color: var(--primario);
-  color: var(--primario);
+  color: var(--texto);
 }
 
 .atajoTecla {
   margin-left: auto;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--texto-terciario);
+}
+
+/* Quien esta mirando. Sin menu detras: solo dice quien eres. */
+.usuario {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  height: 48px;
+  padding: 0 var(--espacio-5) 0 var(--espacio-2);
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  color: var(--texto-secundario);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.usuarioIniciales {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radio-pildora);
+  background: var(--primario);
+  color: var(--primario-texto);
+  font-size: 13px;
+  font-weight: 700;
+  flex: none;
 }
 
 .selectorUsuario {
@@ -144,18 +188,28 @@
 .contenido {
   max-width: var(--ancho-maximo);
   margin: 0 auto;
-  padding: var(--espacio-6) clamp(var(--espacio-4), 3vw, var(--espacio-7)) var(--espacio-7);
+  padding: var(--espacio-5) clamp(var(--espacio-4), 3vw, var(--espacio-7)) var(--espacio-7);
 }
 
 .pieSitio {
   max-width: var(--ancho-maximo);
   margin: 0 auto;
-  padding: var(--espacio-4) clamp(var(--espacio-4), 3vw, var(--espacio-7)) var(--espacio-6);
-  border-top: 1px solid var(--divisor-fuerte);
+  padding: var(--espacio-5) clamp(var(--espacio-4), 3vw, var(--espacio-7)) var(--espacio-6);
+  border-top: 1px solid var(--divisor);
   display: flex;
   gap: var(--espacio-4);
   justify-content: space-between;
   flex-wrap: wrap;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--texto-terciario);
+}
+
+@media (max-width: 1080px) {
+  .atajo {
+    min-width: 0;
+  }
+
+  .atajoTecla {
+    display: none;
+  }
 }

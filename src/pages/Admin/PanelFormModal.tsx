@@ -4,6 +4,7 @@ import { esUrlEmbed, parsearUrlPanel } from '../../domain/panelUrls';
 import { ESTADOS, type EstadoPanel, type Panel, type PanelInput } from '../../domain/types';
 import { Button } from '../../ui/Button';
 import { Campo, Casilla, Input, Select, Textarea } from '../../ui/Campos';
+import { SelectorEquipoNombre, SelectorPersona } from '../../ui/Selectores';
 import { Modal } from '../../ui/Modal';
 import estilos from './PanelFormModal.module.css';
 
@@ -23,6 +24,7 @@ type Borrador = {
   urlPanel: string;
   urlDirecta: string;
   departamento: string;
+  pregunta: string;
   descripcion: string;
   responsable: string;
   grupoAcceso: string;
@@ -39,6 +41,7 @@ function borradorDe(panel: Panel | undefined, departamentoPorDefecto: string): B
     urlPanel: panel?.urlPanel ?? '',
     urlDirecta: panel?.urlDirecta ?? '',
     departamento: panel?.departamento ?? departamentoPorDefecto,
+    pregunta: panel?.pregunta ?? '',
     descripcion: panel?.descripcion ?? '',
     responsable: panel?.responsable ?? '',
     grupoAcceso: panel?.grupoAcceso ?? '',
@@ -64,9 +67,6 @@ function validar(borrador: Borrador): Errores {
   }
   if (borrador.orden.trim() && !Number.isFinite(Number(borrador.orden))) {
     errores.orden = 'El orden tiene que ser un número.';
-  }
-  if (borrador.horaActualizacion.trim() && !/^\d{1,2}:\d{2}$/.test(borrador.horaActualizacion.trim())) {
-    errores.horaActualizacion = 'Formato de hora: 08:15.';
   }
   return errores;
 }
@@ -105,6 +105,7 @@ export function PanelFormModal({
       urlPanel: borrador.urlPanel.trim(),
       urlDirecta: borrador.urlDirecta.trim(),
       departamento: borrador.departamento.trim(),
+      pregunta: borrador.pregunta.trim(),
       descripcion: borrador.descripcion.trim(),
       responsable: borrador.responsable.trim(),
       grupoAcceso: borrador.grupoAcceso.trim(),
@@ -119,7 +120,7 @@ export function PanelFormModal({
 
   return (
     <Modal
-      titulo={panel ? 'Editar panel' : 'Nuevo panel'}
+      titulo={panel ? 'Editar la pantalla' : 'Añadir una pantalla'}
       subtitulo={
         panel
           ? `${panel.departamento} · ${panel.reportId || 'sin informe'}`
@@ -174,13 +175,15 @@ export function PanelFormModal({
           )}
         </Campo>
 
-        <Campo etiqueta="Grupo de acceso" ayuda="Vacío = el del departamento.">
+        <Campo
+          etiqueta="Equipo que lo ve"
+          ayuda="Vacío = el del departamento. Solo para restringir esta pantalla a menos gente."
+        >
           {(id) => (
-            <Input
+            <SelectorEquipoNombre
               id={id}
-              value={borrador.grupoAcceso}
-              onChange={(evento) => cambiar('grupoAcceso', evento.target.value)}
-              placeholder="BI-RetailOnline"
+              valor={borrador.grupoAcceso}
+              alCambiar={(valor) => cambiar('grupoAcceso', valor)}
             />
           )}
         </Campo>
@@ -239,32 +242,50 @@ export function PanelFormModal({
         </div>
 
         <div className={estilos.anchoCompleto}>
-          <Campo etiqueta="Para qué sirve">
+          <Campo
+            etiqueta="La pregunta que responde"
+            ayuda="Es el título que se ve en la portada. Vacía, sale el nombre de arriba."
+          >
             {(id) => (
-              <Textarea
+              <Input
                 id={id}
-                value={borrador.descripcion}
-                onChange={(evento) => cambiar('descripcion', evento.target.value)}
-                placeholder="Una línea que explique qué se responde con este panel."
+                value={borrador.pregunta}
+                onChange={(evento) => cambiar('pregunta', evento.target.value)}
+                placeholder="¿Cómo van las ventas de tienda y online?"
               />
             )}
           </Campo>
         </div>
 
-        <Campo etiqueta="Responsable">
+        <div className={estilos.anchoCompleto}>
+          <Campo
+            etiqueta="Qué se lee debajo de la pregunta"
+            ayuda="Una línea. Es lo único que le dice a alguien qué va a ver antes de abrirlo."
+          >
+            {(id) => (
+              <Textarea
+                id={id}
+                value={borrador.descripcion}
+                onChange={(evento) => cambiar('descripcion', evento.target.value)}
+                placeholder="Ventas del día, ranking de la temporada y comparación con la anterior."
+              />
+            )}
+          </Campo>
+        </div>
+
+        <Campo etiqueta="Responsable" ayuda="A quién preguntar por este informe.">
           {(id) => (
-            <Input
+            <SelectorPersona
               id={id}
-              value={borrador.responsable}
-              onChange={(evento) => cambiar('responsable', evento.target.value)}
-              placeholder="Luis Díaz"
+              valor={borrador.responsable}
+              alCambiar={(valor) => cambiar('responsable', valor)}
             />
           )}
         </Campo>
 
         <Campo
-          etiqueta="Área de trabajo (texto libre)"
-          ayuda="Dato informativo del export. No se usa como clave."
+          etiqueta="Área de trabajo (texto del export)"
+          ayuda="Viene sucio del export original y no lo usa nadie. El área que sí cuenta se pone en «Quién ve qué»."
         >
           {(id) => (
             <Input
@@ -275,23 +296,24 @@ export function PanelFormModal({
           )}
         </Campo>
 
-        <Campo etiqueta="Hora de actualización" error={error('horaActualizacion')}>
+        <Campo etiqueta="Hora de actualización" ayuda="La que se enseña como «Datos hasta las…».">
           {(id) => (
             <Input
               id={id}
+              type="time"
               value={borrador.horaActualizacion}
-              error={Boolean(error('horaActualizacion'))}
               onChange={(evento) => cambiar('horaActualizacion', evento.target.value)}
-              placeholder="08:15"
             />
           )}
         </Campo>
 
-        <Campo etiqueta="Orden" error={error('orden')}>
+        <Campo etiqueta="Orden" ayuda="Más bajo, más arriba en su departamento." error={error('orden')}>
           {(id) => (
             <Input
               id={id}
-              inputMode="numeric"
+              type="number"
+              step={10}
+              min={0}
               value={borrador.orden}
               error={Boolean(error('orden'))}
               onChange={(evento) => cambiar('orden', evento.target.value)}

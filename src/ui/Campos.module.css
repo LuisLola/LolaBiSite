@@ -5,27 +5,27 @@
 }
 
 .etiqueta {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--texto-terciario);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-secundario);
 }
 
+/* Mismo alto que los botones (36px): una barra de filtros queda a una linea. */
 .control {
   width: 100%;
+  min-height: 36px;
   font-family: var(--fuente);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
   color: var(--texto);
   background: var(--tarjeta);
   border: 1px solid var(--divisor-fuerte);
-  border-radius: var(--radio-boton);
-  padding: 7px 10px;
+  border-radius: var(--radio-tarjeta);
+  padding: var(--espacio-2) var(--espacio-3);
 }
 
 .control:hover {
-  border-color: var(--borde-total);
+  border-color: var(--texto-terciario);
 }
 
 .control:focus {
@@ -49,7 +49,7 @@
 }
 
 .monoUrl {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0;
 }
 
@@ -58,14 +58,14 @@
 }
 
 .mensajeError {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--negativo);
 }
 
 .ayuda {
-  font-size: 11px;
-  color: var(--texto-terciario);
+  font-size: 13px;
+  color: var(--texto-secundario);
 }
 
 .buscador {
@@ -83,22 +83,22 @@
 }
 
 .buscadorControl {
-  padding-left: 32px;
+  padding-left: 36px;
 }
 
 .casilla {
   display: inline-flex;
   align-items: center;
   gap: var(--espacio-2);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--texto-secundario);
+  color: var(--texto);
   cursor: pointer;
 }
 
 .casilla input {
-  width: 15px;
-  height: 15px;
+  width: 17px;
+  height: 17px;
   accent-color: var(--primario);
 }
 
@@ -108,9 +108,15 @@
   flex-wrap: wrap;
 }
 
+/*
+ * Edicion en linea dentro de la tabla: sin marco hasta que se pasa por encima,
+ * para que la fila se lea como texto y no como un formulario. El alto minimo
+ * baja aqui: en una tabla de nueve columnas, 36px por celda la desborda.
+ */
 .controlEnLinea {
-  padding: 4px 7px;
-  font-size: 12px;
+  min-height: 0;
+  padding: var(--espacio-1) var(--espacio-2);
+  font-size: 14px;
   border-color: transparent;
   background: transparent;
 }

@@ -1,0 +1,137 @@
+/*
+ * La tarjeta de la portada. Es la unica pieza del portal que usa el mundo
+ * expresivo: relleno tonal del departamento, radio grande y un circulo de
+ * flecha. Las pantallas de trabajo NO la imitan a proposito.
+ */
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-6);
+  border-radius: var(--radio-expresivo);
+  /*
+   * El relleno sale del color del propio departamento: un departamento nuevo
+   * trae su pastel puesto sin tocar nada. 16% es el punto donde el tono se
+   * reconoce y el texto negro sigue por encima de 12:1.
+   */
+  background: color-mix(in srgb, var(--local-color-area) 16%, var(--lienzo));
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.tarjeta:hover {
+  background: color-mix(in srgb, var(--local-color-area) 24%, var(--lienzo));
+  text-decoration: none;
+}
+
+.area {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--espacio-4);
+  border-radius: var(--radio-pildora);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.titulo {
+  flex-grow: 1;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -0.02em;
+  color: var(--texto);
+}
+
+.descripcion {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--texto-secundario);
+  text-wrap: pretty;
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+}
+
+.hora {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--texto-secundario);
+  font-variant-numeric: tabular-nums;
+}
+
+.flecha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radio-pildora);
+  background: var(--primario);
+  color: var(--primario-texto);
+  flex: none;
+}
+
+/* La tarjeta de pedir algo: el unico bloque burdeos macizo de la portada. */
+.solicitud {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--espacio-4);
+  padding: var(--espacio-6);
+  border: 0;
+  border-radius: var(--radio-expresivo);
+  background: var(--primario);
+  color: var(--primario-texto);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.solicitudTitulo {
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -0.02em;
+}
+
+.solicitudTexto {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--sobre-primario-fuerte);
+  text-wrap: pretty;
+}
+
+.solicitudAccion {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--espacio-3);
+  height: 60px;
+  padding: 0 var(--espacio-6);
+  border-radius: var(--radio-pildora);
+  background: var(--primario-suave);
+  color: var(--texto-sobre-suave);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.solicitud:hover .solicitudAccion {
+  background: var(--primario-texto);
+}
+
+/* El modal de la app: ocupa lo que le dejan, sin marco doble. */
+.marco {
+  display: block;
+  width: 100%;
+  height: 68vh;
+  min-height: 420px;
+  border: 0;
+  border-radius: var(--radio-tarjeta);
+  background: var(--papel);
+}

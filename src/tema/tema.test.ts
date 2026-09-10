@@ -13,6 +13,7 @@ import {
   resolverMarca,
   resolverTema,
   sanearTema,
+  SIN_LOGO,
   TEMA_BASE,
   TEMA_DEFECTO,
   temasDisponibles,
@@ -84,12 +85,20 @@ describe('contrato del tema', () => {
 describe('uso de los tokens en el CSS', () => {
   const declarados = new Set<string>([...declaracionesDeTokens().base.keys(), ...declaracionesDeTokens().derivados]);
 
-  it('todo var(--x) apunta a un token declarado', () => {
+  /*
+   * Excepcion unica: --local-*. Son variables que pone el componente en un
+   * style inline para pasarle un dato al CSS (el color del departamento de una
+   * tarjeta, por ejemplo), no colores de marca. No estan en el tema a proposito
+   * -- no se editan desde "Marca LC" -- y el prefijo es lo que las distingue de
+   * un token mal escrito.
+   */
+  it('todo var(--x) apunta a un token declarado, salvo las --local-*', () => {
     for (const ruta of TODOS_LOS_CSS) {
       const contenido = readFileSync(ruta, 'utf8');
       const usados = contenido.match(/var\(--[a-z0-9-]+/gi) ?? [];
       for (const uso of usados) {
         const nombre = uso.replace('var(--', '');
+        if (nombre.indexOf('local-') === 0) continue;
         expect(declarados, `${ruta} usa --${nombre}`).toContain(nombre);
       }
     }
@@ -190,6 +199,21 @@ describe('sanearTema', () => {
 
   it('ignora claves que no son tokens', () => {
     expect(sanearTema({ 'no-existe': '#ffffff' })).toEqual({});
+  });
+
+  it('acepta el logo vacio y una imagen de SharePoint por https', () => {
+    expect(sanearTema({ logo: SIN_LOGO }).logo).toBe(SIN_LOGO);
+    const url = 'url("https://lolacasademunt.sharepoint.com/SiteAssets/logo-lola-monograma.png")';
+    expect(sanearTema({ logo: url }).logo).toBe(url);
+  });
+
+  it('rechaza un logo que se escapa de la declaracion o no es https', () => {
+    // El valor acaba en un background-image: sin esto, un administrador con
+    // permiso de escritura en la lista podria inyectar CSS en todo el portal.
+    expect(sanearTema({ logo: 'url("https://x.com/a.png"); } * { display: none' })).toEqual({});
+    expect(sanearTema({ logo: 'url("javascript:alert(1)")' })).toEqual({});
+    expect(sanearTema({ logo: 'url("http://x.com/a.png")' })).toEqual({});
+    expect(sanearTema({ logo: 'https://x.com/a.png' })).toEqual({});
   });
 
   it('rechaza una fuente con caracteres de CSS', () => {

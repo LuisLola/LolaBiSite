@@ -253,8 +253,8 @@ Están en una lista aparte y se cambian sin recompilar. Ver **[docs/marca.md](ma
 - **React 17.** SPFx 1.20 va con React 17, así que el código compartido evita a
   propósito las novedades de React 18 (`useId`, `createRoot`) y no usa ninguna
   librería de estado que exija 18.
-- **Montserrat.** El web part la carga con `SPComponentLoader.loadCss` desde
-  Google Fonts. Si el tenant lo bloquea, instala `@fontsource-variable/montserrat`
+- **Roboto Flex.** El web part la carga con `SPComponentLoader.loadCss` desde
+  Google Fonts. Si el tenant lo bloquea, instala `@fontsource-variable/roboto-flex`
   en `/spfx` e impórtalo en `PortalBiWebPart.ts`.
 - **Rutas.** Se usa `HashRouter` porque dentro de una página de SharePoint no se
   controla la URL del navegador. Las rutas quedan como

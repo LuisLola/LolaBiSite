@@ -6,7 +6,7 @@
 .tabla {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /*
@@ -16,22 +16,26 @@
  * mas abajo), en vez de meter padding al envoltorio, que recortaria las lineas.
  */
 
-/* Cabeceras: 9px/800 mayusculas burdeos, borde inferior 2px, sin verticales. */
+/*
+ * Cabecera: banda gris clara con etiquetas de 12px. Antes era burdeos a 9px
+ * con un filete de 2px, y competia con el contenido siendo lo menos importante
+ * de la tabla.
+ */
 .tabla thead th {
-  padding: var(--espacio-3) var(--espacio-3) 7px;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1.2px;
+  padding: var(--espacio-3) var(--espacio-3);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--primario);
+  color: var(--texto-secundario);
   text-align: left;
   white-space: nowrap;
-  border-bottom: 2px solid var(--primario);
-  background: transparent;
+  border-bottom: 1px solid var(--borde-tarjeta);
+  background: var(--fila-alterna);
 }
 
 .tabla tbody td {
-  padding: 10px var(--espacio-3);
+  padding: var(--espacio-3);
   border-bottom: 1px solid var(--divisor);
   vertical-align: middle;
 }
@@ -47,9 +51,11 @@
   padding-right: var(--espacio-5);
 }
 
-.tabla:not(.cebraManual) tbody tr:nth-child(even) {
-  background: var(--fila-alterna);
-}
+/*
+ * Sin cebra. La cabecera ya usa --fila-alterna: pintar tambien filas sueltas
+ * del mismo tono hacia que pareciesen cabeceras. La separacion la hace el
+ * filete de 1px, que basta.
+ */
 
 /* Con filas de grupo intercaladas la paridad la marca quien pinta la tabla. */
 .tabla.cebraManual tbody tr.filaAlterna {
@@ -88,6 +94,6 @@
 .vacia {
   padding: var(--espacio-6) var(--espacio-3);
   text-align: center;
-  color: var(--texto-terciario);
-  font-size: 13px;
+  color: var(--texto-secundario);
+  font-size: 14px;
 }

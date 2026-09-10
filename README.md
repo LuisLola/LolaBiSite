@@ -179,12 +179,22 @@ se hace en Teams. Si se quisiera hacer desde aquí haría falta el permiso
 
 ## Sistema visual
 
-Montserrat en todo, lienzo crema, tarjetas blancas con borde suave y radio 8 sin
-sombra, un único color de marca para los bloques grandes, cabeceras de tabla en
-ese color a 9px con borde inferior de 2px y cifras tabulares. Los primitivos
-(`Card`, `Badge`, `Button`, `Table`, `SectionLabel`, `AreaAvatar`, campos y
-`Modal`) están en `src/ui/`. Sin Tailwind, sin librerías de componentes con
-estilo propio, sin degradados y sin azul de SharePoint.
+Roboto Flex en todo, lienzo rosado `#fff8f7` y superficies derivadas del
+burdeos, cifras tabulares. Los primitivos (`Card`, `Badge`, `Button`, `Table`,
+`SectionLabel`, `AreaAvatar`, campos y `Modal`) están en `src/ui/`. Sin
+Tailwind, sin librerías de componentes con estilo propio, sin degradados y sin
+azul de SharePoint.
+
+**Dos registros de forma, y no se mezclan.** La portada invita a entrar:
+tarjetas de 28 px de radio rellenas con el tono del departamento, píldoras de
+999 px, titular de 57 px, un círculo de flecha por tarjeta. Las pantallas de
+administración se dejan trabajar: rectángulos de 8 px, controles de 36 px, un
+solo botón relleno por pantalla, tablas con cabecera gris y filas separadas por
+un filete. Lo que las une es la tipografía, el fondo, el burdeos y la barra
+superior, que es idéntica en las dos. Llevar las píldoras y los radios grandes a
+una tabla es exactamente lo que hace que una pantalla de trabajo parezca un
+juguete; los tokens `radio-expresivo` y `radio-pildora` existen para la portada
+y solo para ella.
 
 Ningún componente escribe un color a mano: todos salen de los tokens de
 `src/ui/tokens.global.css`, y hay un test que falla si alguien mete un hex en un CSS de

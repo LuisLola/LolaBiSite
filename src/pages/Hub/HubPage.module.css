@@ -1,198 +1,177 @@
 .pagina {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-5);
+  gap: var(--espacio-7);
 }
 
 /*
- * Heroe: uno de los dos unicos bloques de color grande.
- *
- * Una sola columna: el buscador que ocupaba la derecha se quito por duplicado
- * (el de la barra superior, con Ctrl K, es el que se queda).
+ * Lo primero que se lee. No es decoracion: es la frase que le dice a alguien
+ * que nunca ha entrado aqui donde esta y que va a encontrar.
  */
-.heroe {
-  padding: var(--espacio-6);
-  background: var(--primario);
-  color: var(--primario-texto);
-  border-radius: var(--radio-tarjeta);
-}
-
-.heroeMarca {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--sobre-primario-medio);
-}
-
-.heroeTitulo {
-  margin-top: var(--espacio-3);
-  font-size: 34px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-}
-
-.heroeTexto {
-  margin-top: var(--espacio-3);
-  max-width: 52ch;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--sobre-primario-fuerte);
-}
-
-.heroeCifras {
-  display: flex;
-  gap: var(--espacio-5);
-  margin-top: var(--espacio-5);
-}
-
-.cifra {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.cifraValor {
-  font-size: 27px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-
-.cifraEtiqueta {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--sobre-primario-medio);
-}
-
-/* Franja de estado de los datos. */
-.estado {
+.banda {
   display: flex;
   align-items: center;
   gap: var(--espacio-5);
-  flex-wrap: wrap;
-  padding: var(--espacio-3) var(--espacio-4);
-  background: var(--tarjeta);
-  border: 1px solid var(--borde-tarjeta);
-  border-radius: var(--radio-tarjeta);
+  padding: var(--espacio-5) var(--espacio-6);
+  border-radius: var(--radio-expresivo);
+  background: var(--primario-suave);
+  color: var(--texto-sobre-suave);
 }
 
-.estadoItems {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-5);
-  flex-wrap: wrap;
-}
-
-.estadoItem {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-2);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--texto);
-  text-decoration: none;
-}
-
-.estadoItem:hover {
-  color: var(--primario);
-  text-decoration: none;
-}
-
-.estadoPunto {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.bandaIcono {
   flex: none;
 }
 
-.estadoHora {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--texto-terciario);
-  font-variant-numeric: tabular-nums;
+.bandaTexto {
+  font-size: 16px;
+  line-height: 24px;
 }
 
-.estadoNota {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--texto-terciario);
-}
-
-/* Cuerpo: contenido + columna derecha. */
-.cuerpo {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 316px;
-  gap: var(--espacio-5);
-  align-items: start;
-}
-
-.principal {
+.entrada {
   display: flex;
   flex-direction: column;
   gap: var(--espacio-5);
-  min-width: 0;
 }
 
-.columnaDerecha {
+.titular {
+  max-width: 18ch;
+  font-size: 57px;
+  font-weight: 700;
+  line-height: 60px;
+  letter-spacing: -0.02em;
+}
+
+/* Es un boton, no un input: abre el mismo buscador que Ctrl K. */
+.buscador {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: var(--espacio-4);
-  min-width: 0;
+  height: 64px;
+  max-width: 720px;
+  padding: 0 var(--espacio-6);
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  color: var(--texto-secundario);
+  font-family: inherit;
+  font-size: 18px;
+  text-align: left;
+  cursor: pointer;
 }
 
-.duo {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--espacio-4);
+.buscador:hover {
+  color: var(--texto);
 }
 
-/*
- * Las areas se acomodan al ancho disponible en vez de ser siempre 3: en un
- * monitor ancho caben 4 y no quedan tarjetas estiradas. auto-fill con un minimo
- * de 260px cubre desde el movil (1 columna) hasta pantallas grandes.
- */
-.rejillaAreas {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--espacio-4);
+.buscadorIcono {
+  flex: none;
 }
 
-@media (max-width: 1180px) {
-  .cuerpo {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 760px) {
-  .duo {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.nota {
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--texto-secundario);
+  text-wrap: pretty;
 }
 
 .seccion {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-3);
+  gap: var(--espacio-5);
 }
 
 .seccionCabecera {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--espacio-3);
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+
+.seccionTitulo {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 36px;
+  letter-spacing: -0.02em;
 }
 
 .seccionNota {
-  font-size: 11px;
-  color: var(--texto-terciario);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--texto-secundario);
 }
 
-.acciones {
+/*
+ * auto-fill con minimo de 320px: tres tarjetas en un portatil, cuatro en un
+ * monitor ancho y una en el movil, sin media queries.
+ */
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--espacio-5);
+}
+
+.fila {
   display: flex;
-  flex-direction: column;
-  gap: var(--espacio-2);
+  gap: var(--espacio-3);
+  flex-wrap: wrap;
+}
+
+/* Los ultimos abiertos: pildoras de 56px, solo nombre y color del area. */
+.reciente {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  height: 56px;
+  padding: 0 var(--espacio-6);
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  color: var(--texto);
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.reciente:hover {
+  background: var(--divisor);
+  text-decoration: none;
+}
+
+.punto {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radio-pildora);
+  flex: none;
+}
+
+/* El indice por departamento, para quien ya sabe lo que busca. */
+.area {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  height: 64px;
+  padding: 0 var(--espacio-6);
+  border: 1px solid var(--divisor-fuerte);
+  border-radius: var(--radio-pildora);
+  background: var(--tarjeta);
+  color: var(--texto);
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.area:hover {
+  border-color: var(--primario);
+  text-decoration: none;
+}
+
+.areaCuenta {
+  font-weight: 400;
+  color: var(--texto-secundario);
+}
+
+@media (max-width: 760px) {
+  .titular {
+    font-size: 40px;
+    line-height: 44px;
+  }
 }

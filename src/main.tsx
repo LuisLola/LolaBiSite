@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PortalBI } from './app/PortalBI';
-import '@fontsource-variable/montserrat';
+import '@fontsource-variable/roboto-flex';
 import { ExcelPanelRepository } from './data/excel/ExcelPanelRepository';
 import { IdentidadSimulada } from './data/identidad/IdentidadSimulada';
 import { DepartamentosLocalRepository } from './data/local/DepartamentosLocalRepository';
@@ -18,7 +18,7 @@ if (!contenedor) throw new Error('No existe #root');
 
 if (origen === 'sharepoint') {
   contenedor.innerHTML =
-    '<p style="font-family:Montserrat,sans-serif;padding:32px;max-width:60ch">' +
+    '<p style="font-family:sans-serif;padding:32px;max-width:60ch">' +
     'VITE_DATA_SOURCE=sharepoint solo funciona dentro del web part de SPFx, que es quien aporta ' +
     'el contexto autenticado. Para trabajar en local pon VITE_DATA_SOURCE=excel en el .env.' +
     '</p>';

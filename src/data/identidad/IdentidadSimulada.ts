@@ -1,4 +1,4 @@
-import type { GrupoM365, MiembroGrupo, UsuarioActual } from '../../domain/acceso';
+import type { GrupoM365, MiembroGrupo, Persona, UsuarioActual } from '../../domain/acceso';
 import type { ProveedorIdentidad } from './ProveedorIdentidad';
 
 const CLAVE = 'portal-bi:usuario-simulado:v2';
@@ -79,6 +79,20 @@ const MIEMBROS: Record<string, MiembroGrupo[]> = {
   ],
 };
 
+/**
+ * Directorio en local.
+ *
+ * Aqui NO se inventan personas. En local no hay forma de preguntarle a
+ * Microsoft 365 quien trabaja en la empresa, y rellenar esto con nombres
+ * plausibles solo sirve para que alguien acabe asignando un responsable que no
+ * existe. La unica entrada es la persona que esta usando el portal, que si es
+ * real, para poder probar que el selector guarda.
+ *
+ * Dentro de la intranet manda IdentidadSharePoint.buscarPersonas, que consulta
+ * /users de Microsoft Graph y devuelve el directorio de verdad.
+ */
+const DIRECTORIO: Persona[] = [];
+
 function leerGuardado(): string | null {
   try {
     return typeof window === 'undefined' ? null : window.localStorage.getItem(CLAVE);
@@ -119,6 +133,20 @@ export class IdentidadSimulada implements ProveedorIdentidad {
 
   async getMiembros(grupoId: string): Promise<MiembroGrupo[]> {
     return MIEMBROS[grupoId] ?? [];
+  }
+
+  async buscarPersonas(consulta: string): Promise<Persona[]> {
+    const actual = await this.getUsuarioActual();
+    const candidatos: Persona[] = actual.correo
+      ? [{ id: actual.id, nombre: actual.nombre, correo: actual.correo }, ...DIRECTORIO]
+      : DIRECTORIO;
+    const texto = consulta.trim().toLowerCase();
+    if (!texto) return candidatos;
+    return candidatos.filter(
+      (persona) =>
+        persona.nombre.toLowerCase().includes(texto) ||
+        (persona.correo ?? '').toLowerCase().includes(texto),
+    );
   }
 
   usuariosDePrueba(): UsuarioActual[] {

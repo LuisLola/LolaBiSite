@@ -74,6 +74,7 @@ export function completarPanel(parcial: Partial<Panel> & { nombre: string }, ind
   const ctid = parcial.ctid ?? datosUrl?.ctid;
   if (ctid) panel.ctid = ctid;
   if (parcial.urlDirecta?.trim()) panel.urlDirecta = parcial.urlDirecta.trim();
+  if (parcial.pregunta?.trim()) panel.pregunta = parcial.pregunta.trim();
   if (parcial.descripcion?.trim()) panel.descripcion = parcial.descripcion.trim();
   if (parcial.responsable?.trim()) panel.responsable = parcial.responsable.trim();
 
@@ -116,6 +117,7 @@ export function filasAPaneles(filas: readonly FilaExcel[]): ResultadoImportacion
           urlPanel,
           urlDirecta: aTexto(valores.urlDirecta),
           departamento: aTexto(valores.departamento),
+          pregunta: aTexto(valores.pregunta),
           descripcion: aTexto(valores.descripcion),
           responsable: aTexto(valores.responsable),
           grupoAcceso: aTexto(valores.grupoAcceso),

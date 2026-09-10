@@ -1,14 +1,20 @@
+/*
+ * Registro de trabajo: rectangulos de 8px y 36px de alto. Las pildoras de la
+ * portada NO se usan aqui a proposito; ver el bloque "Forma" de tokens.
+ * 36px es lo minimo comodo con raton, y deja caber una barra de acciones
+ * entera sin que la pantalla parezca un juguete.
+ */
 .boton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--espacio-2);
-  border-radius: var(--radio-boton);
+  height: 36px;
+  border-radius: var(--radio-tarjeta);
   border: 1px solid transparent;
-  padding: 8px 14px;
-  font-size: 12px;
+  padding: 0 var(--espacio-4);
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.01em;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
@@ -35,10 +41,15 @@
   border-color: var(--primario-hover);
 }
 
+/*
+ * Texto oscuro, no burdeos: en una barra con cinco acciones, cinco textos
+ * burdeos compiten con el boton principal y ninguno gana.
+ */
 .secundario {
   background: var(--tarjeta);
-  color: var(--primario);
-  border-color: var(--borde-total);
+  color: var(--texto);
+  border-color: var(--divisor-fuerte);
+  font-weight: 500;
 }
 
 .secundario:hover:not(:disabled) {
@@ -59,7 +70,7 @@
 .peligro {
   background: var(--tarjeta);
   color: var(--negativo);
-  border-color: var(--borde-total);
+  border-color: var(--divisor-fuerte);
 }
 
 .peligro:hover:not(:disabled) {
@@ -67,12 +78,15 @@
 }
 
 .pequeno {
-  padding: 5px 9px;
-  font-size: 11px;
+  height: 32px;
+  padding: 0 var(--espacio-3);
+  font-size: 14px;
 }
 
+/* Cuadrado: el objetivo tactil no baja de 32px aunque el icono sea de 13px. */
 .icono {
-  padding: 6px;
+  width: 32px;
+  padding: 0;
   border-radius: var(--radio-boton);
 }
 

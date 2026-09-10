@@ -6,6 +6,7 @@ export type CampoPanel =
   | 'urlPanel'
   | 'urlDirecta'
   | 'departamento'
+  | 'pregunta'
   | 'descripcion'
   | 'responsable'
   | 'grupoAcceso'
@@ -45,6 +46,13 @@ export const COLUMNAS: readonly DefinicionColumna[] = [
   },
   { campo: 'urlDirecta', cabecera: 'UrlDirecta', interno: 'UrlDirecta', alias: ['url directa', 'enlace', 'url de apertura'] },
   { campo: 'departamento', cabecera: 'Departamento', interno: 'Departamento', alias: ['area', 'dpto'] },
+  /*
+   * La pregunta que responde el informe, en las palabras de quien la hace:
+   * "¿Cómo van las ventas de tienda y online?". Es lo que se ve en la portada.
+   * Opcional a proposito: vacia, la tarjeta cae al nombre del informe, asi que
+   * la lista puede irse rellenando informe a informe sin dejar huecos.
+   */
+  { campo: 'pregunta', cabecera: 'Pregunta', interno: 'Pregunta', alias: ['pregunta', 'que responde', 'qué responde'] },
   { campo: 'descripcion', cabecera: 'Descripcion', interno: 'Descripcion', alias: ['descripcion', 'para que sirve', 'descripción'] },
   { campo: 'responsable', cabecera: 'Responsable', interno: 'Responsable', alias: ['propietario', 'owner'] },
   { campo: 'grupoAcceso', cabecera: 'GrupoAcceso', interno: 'GrupoAcceso', alias: ['grupo de acceso', 'grupo'] },

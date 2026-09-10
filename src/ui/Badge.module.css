@@ -1,17 +1,21 @@
+/*
+ * Etiqueta de estado, no de adorno: se lee tal cual esta escrita. Antes iba en
+ * mayusculas a 10px con filete, que a base de repetirse en cada fila hacia mas
+ * ruido que el dato al que acompaña.
+ */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  border: 1px solid var(--divisor-fuerte);
+  gap: var(--espacio-2);
+  height: 22px;
+  border: 1px solid transparent;
   border-radius: var(--radio-chip);
-  padding: 2px 7px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  padding: 0 var(--espacio-2);
+  font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
   color: var(--texto-secundario);
-  background: var(--tarjeta);
+  background: var(--papel);
 }
 
 /* "activo" comparte esta regla: el tono es el mismo. */

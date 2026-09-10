@@ -16,6 +16,7 @@ import {
   temasDisponibles,
   type Marca,
   type ServicioMarca,
+  type Tema,
 } from './tema';
 
 export interface EstadoTema {
@@ -26,6 +27,12 @@ export interface EstadoTema {
   puedeCambiar: boolean;
   guardando: boolean;
   cambiar: (tema: string) => Promise<void>;
+  /**
+   * Los valores ya resueltos. Casi todo el portal los consume como variables
+   * CSS, pero `logo` decide qué se renderiza, no solo cómo se pinta, así que
+   * hace falta leerlo desde React.
+   */
+  tokens: Tema;
 }
 
 const Contexto = createContext<EstadoTema | null>(null);
@@ -35,9 +42,10 @@ export function TemaProvider({ marca, children }: { marca?: ServicioMarca; child
   const [guardando, setGuardando] = useState(false);
 
   // Sincrono, en el inicializador: se aplica antes del primer pintado.
-  useState(() => {
-    aplicarTema(resolverTema(leerCache()));
-    return null;
+  const [tokens, setTokens] = useState<Tema>(() => {
+    const inicial = resolverTema(leerCache());
+    aplicarTema(inicial);
+    return inicial;
   });
 
   useEffect(() => {
@@ -51,6 +59,7 @@ export function TemaProvider({ marca, children }: { marca?: ServicioMarca; child
         setEstado(leida);
         const resuelto = resolverMarca(leida);
         aplicarTema(resuelto);
+        setTokens(resuelto);
         guardarCache(resuelto);
       })
       .catch((error) => {
@@ -73,6 +82,7 @@ export function TemaProvider({ marca, children }: { marca?: ServicioMarca; child
         setEstado(siguiente);
         const resuelto = resolverMarca(siguiente);
         aplicarTema(resuelto);
+        setTokens(resuelto);
         guardarCache(resuelto);
       } finally {
         setGuardando(false);
@@ -87,6 +97,7 @@ export function TemaProvider({ marca, children }: { marca?: ServicioMarca; child
     puedeCambiar: Boolean(marca),
     guardando,
     cambiar,
+    tokens,
   };
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;

@@ -1,10 +1,10 @@
 .etiqueta {
   display: block;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--texto-terciario);
+  color: var(--texto-secundario);
 }
 
 .sobreBurdeos {

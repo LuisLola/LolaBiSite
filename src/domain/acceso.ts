@@ -15,12 +15,23 @@ export interface GrupoM365 {
   descripcion?: string;
 }
 
-export type RolMiembro = 'propietario' | 'miembro';
-
-export interface MiembroGrupo {
+/**
+ * Una persona del directorio de la empresa.
+ *
+ * Donde se guarda una persona (el responsable de un informe o de un area) se
+ * guarda su CORREO, no su nombre: el correo no cambia cuando alguien se casa,
+ * se le corrige una tilde o pasa a llamarse "Maria J." en el directorio. El
+ * nombre se resuelve al pintar.
+ */
+export interface Persona {
   id: string;
   nombre: string;
   correo?: string;
+}
+
+export type RolMiembro = 'propietario' | 'miembro';
+
+export interface MiembroGrupo extends Persona {
   rol: RolMiembro;
 }
 

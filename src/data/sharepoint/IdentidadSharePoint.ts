@@ -7,7 +7,13 @@
  * catalogo de aplicaciones los permisos declarados en package-solution.json.
  */
 import { GRUPO_ADMINISTRADORES } from '../../config/tenant.config';
-import { esElMismoGrupo, type GrupoM365, type MiembroGrupo, type UsuarioActual } from '../../domain/acceso';
+import {
+  esElMismoGrupo,
+  type GrupoM365,
+  type MiembroGrupo,
+  type Persona,
+  type UsuarioActual,
+} from '../../domain/acceso';
 import type { ProveedorIdentidad } from '../identidad/ProveedorIdentidad';
 
 /**
@@ -106,6 +112,41 @@ export class IdentidadSharePoint implements ProveedorIdentidad {
     }
     const respuesta = await peticion.get<{ value: GrupoGraph[] }>();
     return (respuesta.value ?? []).map(aGrupo);
+  }
+
+  /**
+   * Personas del directorio, para asignar responsables.
+   *
+   * Se filtra a cuentas con buzon (userType Member) y se ordena por nombre. Sin
+   * consulta devuelve las primeras 50: suficiente para arrancar el selector,
+   * que sigue buscando en cuanto se escribe.
+   */
+  async buscarPersonas(consulta: string): Promise<Persona[]> {
+    const cliente = await this.contexto.msGraphClientFactory.getClient('3');
+    // Las comillas simples se duplican: es como se escapan en un filtro OData.
+    const texto = consulta.trim().replace(/'/g, "''");
+    let peticion = cliente
+      .api('/users')
+      .version('v1.0')
+      .select('id,displayName,mail,userPrincipalName')
+      .top(50);
+    peticion = texto
+      ? peticion.filter(
+          `startswith(displayName,'${texto}') or startswith(mail,'${texto}') or startswith(userPrincipalName,'${texto}')`,
+        )
+      : peticion.filter("userType eq 'Member'");
+    const respuesta = await peticion.get<{ value: UsuarioGraph[] }>();
+    return (respuesta.value ?? [])
+      .map((usuario) => {
+        const persona: Persona = {
+          id: usuario.id,
+          nombre: usuario.displayName ?? usuario.userPrincipalName ?? usuario.id,
+        };
+        const correo = usuario.mail ?? usuario.userPrincipalName;
+        if (correo) persona.correo = correo;
+        return persona;
+      })
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
   }
 
   async getMiembros(grupoId: string): Promise<MiembroGrupo[]> {

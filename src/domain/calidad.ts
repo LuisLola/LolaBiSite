@@ -62,11 +62,17 @@ export function avisosDePanel(panel: Panel, opciones: OpcionesCalidad = {}): Avi
     });
   }
 
+  /*
+   * Gravedad media, no baja: la descripcion es lo unico que le dice a un
+   * empleado que va a ver antes de abrir el informe. Sin ella la portada se
+   * queda en una lista de nombres tecnicos, que es justo el problema que el
+   * portal viene a resolver.
+   */
   if (!panel.descripcion?.trim()) {
     avisos.push({
       tipo: 'sin-descripcion',
-      gravedad: 'baja',
-      mensaje: 'Sin descripción: en la tabla del área no se explica para qué sirve.',
+      gravedad: 'media',
+      mensaje: 'Sin explicación: en el portal no dice qué se va a ver antes de abrirlo.',
     });
   }
 

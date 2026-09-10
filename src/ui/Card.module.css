@@ -34,14 +34,18 @@
   color: var(--primario-texto);
 }
 
+/*
+ * --fila-alterna, no --papel: --papel es el rosa de las pildoras de la barra y
+ * a tamano de tarjeta grande satura la pantalla entera.
+ */
 .doc {
-  background: var(--papel);
-  border-color: var(--divisor-fuerte);
+  background: var(--fila-alterna);
+  border-color: var(--borde-tarjeta);
 }
 
 .atenuada {
-  background: var(--papel);
-  border-color: var(--divisor-fuerte);
+  background: var(--fila-alterna);
+  border-color: var(--borde-tarjeta);
   color: var(--texto-secundario);
 }
 
@@ -54,7 +58,7 @@
 }
 
 .titulo {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
 }
 
@@ -66,6 +70,6 @@
   margin-top: var(--espacio-4);
   padding-top: var(--espacio-3);
   border-top: 1px solid var(--divisor);
-  font-size: 11px;
-  color: var(--texto-terciario);
+  font-size: 13px;
+  color: var(--texto-secundario);
 }

@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   ArrowDown,
   ArrowUp,
   Copy,
@@ -26,6 +27,7 @@ import { useDepartamentos, useMutacionesPanel, usePaneles } from '../../hooks/us
 import { Badge } from '../../ui/Badge';
 import { BotonEnlace, Button } from '../../ui/Button';
 import { Buscador, Campo, Input, Select } from '../../ui/Campos';
+import { SelectorPersona } from '../../ui/Selectores';
 import { Card, CardCabecera, CardTitulo } from '../../ui/Card';
 import { SectionLabel } from '../../ui/SectionLabel';
 import { FilaVacia, Table, Td, Th } from '../../ui/Table';
@@ -33,12 +35,12 @@ import { cx } from '../../ui/cx';
 import { PanelFormModal } from './PanelFormModal';
 import estilos from './AdminPage.module.css';
 
-const COLUMNAS = 9;
+const COLUMNAS = 8;
 
 const GRAVEDAD_A_TONO = { alta: 'aviso', media: 'solicitar', baja: 'neutro' } as const;
 
 /** Campos que se editan directamente sobre la fila. */
-type CampoInline = 'nombre' | 'descripcion' | 'responsable' | 'horaActualizacion' | 'orden';
+type CampoInline = 'nombre' | 'descripcion' | 'responsable' | 'orden';
 
 export function AdminPage() {
   const repositorio = useRepositorio();
@@ -67,6 +69,20 @@ export function AdminPage() {
   // sin esto, "falta area de trabajo" y "departamento huerfano" saldrian siempre.
   const contextoCalidad = useMemo(() => contextoDeCalidad(departamentos), [departamentos]);
   const avisos = useMemo(() => resumenAvisos(paneles, departamentos), [paneles, departamentos]);
+
+  /*
+   * El aviso que sube a la franja de arriba: primero el mas grave, y entre los
+   * de la misma gravedad, el que afecta a mas filas. Con nueve avisos en una
+   * lista nadie sabe por cual empezar; con uno arriba, si.
+   */
+  const avisoPrincipal = useMemo(() => {
+    const peso = { alta: 3, media: 2, baja: 1 } as const;
+    return [...avisos].sort(
+      (a, b) =>
+        (peso[b.gravedad as keyof typeof peso] ?? 0) - (peso[a.gravedad as keyof typeof peso] ?? 0) ||
+        b.total - a.total,
+    )[0];
+  }, [avisos]);
   const nombresDepartamento = useMemo(() => departamentos.map((d) => d.nombre), [departamentos]);
 
   const editarCampo = (panel: Panel, campo: CampoInline, valor: string) => {
@@ -93,6 +109,7 @@ export function AdminPage() {
       urlPanel: panel.urlPanel,
       urlDirecta: panel.urlDirecta ?? '',
       departamento: panel.departamento,
+      pregunta: panel.pregunta ?? '',
       descripcion: panel.descripcion ?? '',
       responsable: panel.responsable ?? '',
       grupoAcceso: panel.grupoAcceso ?? '',
@@ -127,10 +144,10 @@ export function AdminPage() {
     <div className={estilos.pagina}>
       <header className={estilos.cabecera}>
         <div>
-          <h1 className={estilos.titulo}>Administración de paneles</h1>
+          <h1 className={estilos.titulo}>Los informes del portal</h1>
           <p className={estilos.subtitulo}>
-            Todo lo que hay en la lista, en cualquier estado. Añadir un panel es una operación de
-            esta pantalla: no se toca código. Origen actual: <strong>{repositorio.nombre}</strong>.
+            Una fila por pantalla de Power BI, en cualquier estado. Lo que escribas aquí se ve en el
+            portal al momento. Origen actual: <strong>{repositorio.nombre}</strong>.
           </p>
         </div>
         <div className={estilos.accionesCabecera}>
@@ -170,12 +187,12 @@ export function AdminPage() {
             </Button>
           ) : null}
           <BotonEnlace a="/admin/accesos" variante="secundario">
-            <Users size={14} strokeWidth={1.75} />
-            Áreas y accesos
+            <Users size={16} strokeWidth={1.75} />
+            Quién ve qué
           </BotonEnlace>
           <Button variante="primario" onClick={() => setCreando(true)}>
-            <Plus size={14} strokeWidth={1.75} />
-            Nuevo panel
+            <Plus size={16} strokeWidth={1.75} />
+            Añadir un informe
           </Button>
         </div>
       </header>
@@ -184,11 +201,21 @@ export function AdminPage() {
         <p className={cx(estilos.mensaje, mensaje.error && estilos.mensajeError)}>{mensaje.texto}</p>
       ) : null}
 
+      {avisoPrincipal ? (
+        <p className={estilos.franjaAviso}>
+          <AlertTriangle className={estilos.franjaAvisoIcono} size={20} strokeWidth={1.75} aria-hidden="true" />
+          <span className={estilos.franjaAvisoTexto}>
+            <strong>{avisoPrincipal.mensaje}</strong> Afecta a {avisoPrincipal.total}{' '}
+            {avisoPrincipal.total === 1 ? 'fila' : 'filas'}.
+          </span>
+        </p>
+      ) : null}
+
       <div className={estilos.barraFiltros}>
         <div className={estilos.filtroBuscador}>
           <Buscador
-            etiquetaAccesible="Buscar en todos los paneles"
-            placeholder="Buscar por nombre, descripción, departamento o área…"
+            etiquetaAccesible="Buscar en todas las pantallas"
+            placeholder="Buscar por nombre, explicación o departamento…"
             value={consulta}
             onChange={(evento) => setConsulta(evento.target.value)}
           />
@@ -218,7 +245,7 @@ export function AdminPage() {
           )}
         </Campo>
         <span className={estilos.resumenFiltro}>
-          {filtrados.length} de {paneles.length} paneles
+          {filtrados.length} de {paneles.length} pantallas
         </span>
       </div>
 
@@ -247,11 +274,10 @@ export function AdminPage() {
           <thead>
             <tr>
               <Th numerico estrecha>Orden</Th>
-              <Th>Panel</Th>
+              <Th>Pantalla</Th>
               <Th>Departamento</Th>
-              <Th>Para qué sirve</Th>
+              <Th>Qué se lee en el portal</Th>
               <Th>Responsable</Th>
-              <Th numerico estrecha>Hora</Th>
               <Th estrecha>Estado</Th>
               <Th estrecha>Avisos</Th>
               <Th estrecha>Acciones</Th>
@@ -259,9 +285,9 @@ export function AdminPage() {
           </thead>
           <tbody>
             {isPending ? (
-              <FilaVacia colSpan={COLUMNAS}>Cargando paneles…</FilaVacia>
+              <FilaVacia colSpan={COLUMNAS}>Cargando…</FilaVacia>
             ) : filtrados.length === 0 ? (
-              <FilaVacia colSpan={COLUMNAS}>Ningún panel coincide con los filtros.</FilaVacia>
+              <FilaVacia colSpan={COLUMNAS}>Ninguna pantalla coincide con los filtros.</FilaVacia>
             ) : (
               filtrados.map((panel) => {
                 const avisosPanel = avisosDePanel(panel, contextoCalidad(panel));
@@ -270,8 +296,10 @@ export function AdminPage() {
                     <Td estrecha>
                       <Input
                         enLinea
+                        type="number"
+                        step={10}
+                        min={0}
                         className={estilos.celdaOrden}
-                        inputMode="numeric"
                         aria-label={`Orden de ${panel.nombre}`}
                         defaultValue={panel.orden}
                         onBlur={(evento) => {
@@ -335,30 +363,9 @@ export function AdminPage() {
                       />
                     </Td>
                     <Td>
-                      <Input
-                        enLinea
-                        aria-label={`Responsable de ${panel.nombre}`}
-                        placeholder="Sin asignar"
-                        defaultValue={panel.responsable ?? ''}
-                        onBlur={(evento) => {
-                          if (evento.target.value !== (panel.responsable ?? '')) {
-                            editarCampo(panel, 'responsable', evento.target.value);
-                          }
-                        }}
-                      />
-                    </Td>
-                    <Td estrecha>
-                      <Input
-                        enLinea
-                        className={estilos.celdaHora}
-                        aria-label={`Hora de ${panel.nombre}`}
-                        placeholder="—"
-                        defaultValue={panel.horaActualizacion ?? ''}
-                        onBlur={(evento) => {
-                          if (evento.target.value !== (panel.horaActualizacion ?? '')) {
-                            editarCampo(panel, 'horaActualizacion', evento.target.value);
-                          }
-                        }}
+                      <SelectorPersona
+                        valor={panel.responsable ?? ''}
+                        alCambiar={(valor) => editarCampo(panel, 'responsable', valor)}
                       />
                     </Td>
                     <Td estrecha>
@@ -452,8 +459,7 @@ export function AdminPage() {
 
       <div className={estilos.pie}>
         <span>
-          Retirar es un borrado lógico: la fila se queda con Estado = «Retirado» y desaparece del
-          portal de consulta.
+          Retirar no borra nada: la fila se queda con Estado = «Retirado» y deja de salir en el portal.
         </span>
         <span>
           Exportar genera el Excel con las columnas del export original más las nuevas, listo para

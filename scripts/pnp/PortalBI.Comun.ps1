@@ -56,6 +56,7 @@ $CamposPaneles = [ordered]@{
   'Url_x0020_Panel'             = '<Field Type="URL" Name="Url_x0020_Panel" StaticName="Url_x0020_Panel" DisplayName="Url Panel" Format="Hyperlink" Required="FALSE" />'
   'UrlDirecta'                  = '<Field Type="URL" Name="UrlDirecta" StaticName="UrlDirecta" DisplayName="UrlDirecta" Format="Hyperlink" Required="FALSE" />'
   'Departamento'                = '<Field Type="Text" Name="Departamento" StaticName="Departamento" DisplayName="Departamento" MaxLength="255" Required="FALSE" />'
+  'Pregunta'                    = '<Field Type="Text" Name="Pregunta" StaticName="Pregunta" DisplayName="Pregunta" MaxLength="255" Required="FALSE" />'
   'Descripcion'                 = '<Field Type="Note" Name="Descripcion" StaticName="Descripcion" DisplayName="Descripcion" NumLines="4" RichText="FALSE" RichTextMode="Compatible" Required="FALSE" />'
   'Responsable'                 = '<Field Type="Text" Name="Responsable" StaticName="Responsable" DisplayName="Responsable" MaxLength="255" Required="FALSE" />'
   'GrupoAcceso'                 = '<Field Type="Text" Name="GrupoAcceso" StaticName="GrupoAcceso" DisplayName="GrupoAcceso" MaxLength="255" Required="FALSE" />'

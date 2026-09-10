@@ -1,4 +1,4 @@
-import type { GrupoM365, MiembroGrupo, UsuarioActual } from '../../domain/acceso';
+import type { GrupoM365, MiembroGrupo, Persona, UsuarioActual } from '../../domain/acceso';
 
 /**
  * De donde sale la identidad y los grupos del usuario.
@@ -16,6 +16,11 @@ export interface ProveedorIdentidad {
   buscarGrupos(consulta: string): Promise<GrupoM365[]>;
   /** Administracion: quien esta dentro de un equipo. */
   getMiembros(grupoId: string): Promise<MiembroGrupo[]>;
+  /**
+   * Administracion: buscar personas del directorio para asignar responsables.
+   * Con la consulta vacia devuelve un primer listado con el que arrancar.
+   */
+  buscarPersonas(consulta: string): Promise<Persona[]>;
 
   /** Fase 1: lista de usuarios de prueba. Vacio o ausente en produccion. */
   usuariosDePrueba?(): UsuarioActual[];

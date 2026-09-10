@@ -23,14 +23,34 @@ function leerGuardados(): AjustesDepartamento[] {
   }
 }
 
+/*
+ * "Sin equipo" tiene que poder guardarse.
+ *
+ * JSON.stringify se come las claves con undefined, asi que un departamento al
+ * que se le quita el equipo se guardaba sin la clave `grupo`, y al releer
+ * volvia a heredar el de la configuracion: el cambio se deshacia solo al
+ * recargar. Se escribe null, que si viaja, y se traduce a undefined al leer.
+ */
 function escribir(ajustes: readonly AjustesDepartamento[]): void {
   const memoria = almacen();
   if (!memoria) return;
   try {
-    memoria.setItem(CLAVE, JSON.stringify(ajustes));
+    memoria.setItem(
+      CLAVE,
+      JSON.stringify(ajustes, (_clave, valor: unknown) => (valor === undefined ? null : valor)),
+    );
   } catch {
     // Cuota llena o almacenamiento bloqueado: la sesión sigue en memoria.
   }
+}
+
+/** null en el almacen significa "puesto a vacio a proposito". */
+function sinNulos(ajustes: AjustesDepartamento): AjustesDepartamento {
+  const limpio = { ...ajustes } as Record<string, unknown>;
+  for (const clave of Object.keys(limpio)) {
+    if (limpio[clave] === null) limpio[clave] = undefined;
+  }
+  return limpio as unknown as AjustesDepartamento;
 }
 
 /** Los ajustes de arranque que trae departamentos.config.ts. */
@@ -56,7 +76,7 @@ export class DepartamentosLocalRepository implements DepartamentoRepository {
       const porNombre = new Map<string, AjustesDepartamento>();
       for (const base of deLaConfiguracion()) porNombre.set(base.nombre, base);
       for (const guardado of leerGuardados()) {
-        porNombre.set(guardado.nombre, { ...porNombre.get(guardado.nombre), ...guardado });
+        porNombre.set(guardado.nombre, sinNulos({ ...porNombre.get(guardado.nombre), ...guardado }));
       }
       this.ajustes = [...porNombre.values()];
     }
