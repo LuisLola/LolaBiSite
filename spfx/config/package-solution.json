@@ -7,7 +7,7 @@
     // IsValidAppPackage: False y no aparecia como aplicacion.
     "name": "portal-bi-client-side-solution",
     "id": "06fba074-d2b5-4340-b2ad-f7d51b577c8d",
-    "version": "0.2.0.0",
+    "version": "0.3.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -38,7 +38,7 @@
         "title": "Portal BI - Lola Casademunt",
         "description": "Despliega el web part Portal BI y el botón global que lo abre en una ventana.",
         "id": "b5c01a4e-27f2-405d-9e2a-b064865c47a4",
-        "version": "0.2.0.0"
+        "version": "0.3.0.0"
 
         // El boton global esta DESACTIVADO a proposito. ClientSideInstance.xml
         // registra el Application Customizer en todas las paginas de todos los
